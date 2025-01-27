@@ -1,7 +1,6 @@
 // app/layout.tsx
 import './globals.css';
 import Link from 'next/link';
-import Nav from './components/Nav';
 
 export const metadata = {
   title: 'main page',
@@ -12,17 +11,26 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <html lang="ko">
-      <body className="bg-gray-100 min-h-screen flex flex-col">
-        <header className="bg-gray-800 text-white p-4 flex-shrink-0 flex justify-between">
-          <div className="flex items-center">
-            <Nav /> 
-            <Link href="/" className="text-xl font-bold">
-              포트폴리오 백테스트
-            </Link>
+      <body className="bg-gray-100 min-h-screen flex flex-col justify-center">
+        <header className="bg-gray-800 text-white p-4 flex-shrink-0">
+          <div className="flex justify-between max-w-[1200px] mx-auto">
+            <div className="flex items-center">
+              <Link href="/" className="text-xl font-bold">
+                Stock Helper
+              </Link>
+            </div>
+            <div>
+              <Link href="/login" className="mr-4">로그인</Link>
+            </div>
           </div>
-
-          <div>
-            <Link href="/login" className="mr-4">로그인</Link>
+          <hr className="border-t border-gray-300 my-1" />
+          <div className="max-w-[1200px] mx-auto">
+            <div className="">
+              <Link href="/login" className="mr-4">로그인</Link>
+              {/* <Link href="/login" className="mr-4">로그인</Link>
+              <Link href="/login" className="mr-4">로그인</Link>
+              <Link href="/login" className="mr-4">로그인</Link> */}
+            </div>
           </div>
         </header>
 
