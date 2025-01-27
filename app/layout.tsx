@@ -21,15 +21,16 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </div>
             <div>
               <Link href="/login" className="mr-4">로그인</Link>
+              <Link href="/register" className="mr-4">회원가입</Link>
             </div>
           </div>
           <hr className="border-t border-gray-300 my-1" />
           <div className="max-w-[1200px] mx-auto">
             <div className="">
-              <Link href="/login" className="mr-4">로그인</Link>
-              {/* <Link href="/login" className="mr-4">로그인</Link>
-              <Link href="/login" className="mr-4">로그인</Link>
-              <Link href="/login" className="mr-4">로그인</Link> */}
+              <Link href="/menu1" className="mr-4">메뉴1</Link>
+              {/* <Link href="/login" className="mr-4">메뉴2</Link>
+              <Link href="/login" className="mr-4">메뉴3</Link>
+              <Link href="/login" className="mr-4">메뉴4</Link> */}
             </div>
           </div>
         </header>
