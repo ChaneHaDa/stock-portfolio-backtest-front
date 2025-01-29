@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface PortfolioItem {
   stockName: string;
@@ -12,7 +13,9 @@ const PortfolioForm = () => {
 
     const [startDate, setStartDate] = useState("2020-01");
     const [endDate, setEndDate] = useState("2024-01");
-    const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([{ stockName: "삼성전자", weight: "0.5" }]);
+    const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([{ stockName: "삼성전자", weight: "1" }]);
+    const router = useRouter();
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,7 +31,7 @@ const PortfolioForm = () => {
           body: JSON.stringify({
             startDate: formattedStartDate,
             endDate: formattedEndDate,
-            portfolioInputItemDTOList: portfolioItems.map(item => ({
+            portfolioRequestItemDTOList: portfolioItems.map(item => ({
               stockName: item.stockName,
               weight: parseFloat(item.weight),
             })),
@@ -38,7 +41,8 @@ const PortfolioForm = () => {
         
         if (response.ok) {
           const data = await response.json();
-          console.log('백테스트 결과:', data);
+          sessionStorage.setItem('backtestResult', JSON.stringify(data.data));
+          router.push('/backtest/result');
         } else {
           console.error('API 호출 오류:', response.statusText);
         }
