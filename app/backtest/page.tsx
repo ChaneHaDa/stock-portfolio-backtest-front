@@ -12,7 +12,7 @@ const PortfolioForm = () => {
 
     const [startDate, setStartDate] = useState("2020-01");
     const [endDate, setEndDate] = useState("2024-01");
-    const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([{ stockName: "삼성전자", weight: "1" }]);
+    const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([{ stockName: "삼성전자", weight: "0.5" }]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
