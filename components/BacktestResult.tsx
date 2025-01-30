@@ -9,6 +9,10 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
 } from 'recharts';
 
 const BacktestResult = ({ result }: { result: any }) => {
@@ -21,6 +25,15 @@ const BacktestResult = ({ result }: { result: any }) => {
       }))
       .sort((a, b) => a.date.localeCompare(b.date));
   };
+
+  const processPortfolioData = (portfolio: any[]) => {
+    return portfolio.map((item) => ({
+      name: item.stockName,
+      value: item.weight * 100,
+    }));
+  };
+
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28BFF', '#FF6384'];
 
   // 공통 스타일 클래스
   const sectionStyle = "bg-white rounded-lg shadow p-6 mb-6";
@@ -48,6 +61,29 @@ const BacktestResult = ({ result }: { result: any }) => {
           </span>
           <span className="text-gray-600">누적 수익률</span>
         </div>
+      </div>
+
+      {/* 포트폴리오 구성 원형 차트 */}
+      <div className={sectionStyle}>
+        <h2 className={headingStyle}>포트폴리오 구성</h2>
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart>
+            <Pie
+              data={processPortfolioData(result.portfolionput.portfolioRequestItemDTOList)}
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              fill="#8884d8"
+              dataKey="value"
+              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+            >
+              {processPortfolioData(result.portfolionput.portfolioRequestItemDTOList).map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Legend />
+          </PieChart>
+        </ResponsiveContainer>
       </div>
 
       {/* 수익률 차트 섹션 */}
