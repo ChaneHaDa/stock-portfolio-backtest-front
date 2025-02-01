@@ -44,9 +44,9 @@ const BacktestResult = ({ result }: { result: any }) => {
   const totalPortfolioValue = portfolioData.reduce((acc, cur) => acc + cur.value, 0);
 
   // 달별 수익률 값들을 배열로 추출한 후 최고/최저 수익률 계산
-  const monthlyValues = Object.values(result.monthlyRor);
-  const highestMonthlyRor = Math.max(...monthlyValues);
-  const lowestMonthlyRor = Math.min(...monthlyValues);
+  const monthlyValues = Object.values(result.monthlyRor).map(value => Number(value));
+  const highestMonthlyRor = monthlyValues.length > 0 ? Math.max(...monthlyValues) : 0;
+  const lowestMonthlyRor = monthlyValues.length > 0 ? Math.min(...monthlyValues) : 0;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">

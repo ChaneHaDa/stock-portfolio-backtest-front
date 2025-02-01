@@ -27,7 +27,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <hr className="border-t border-gray-300 my-1" />
           <div className="max-w-[1200px] mx-auto">
             <div className="">
-              <Link href="/backtest" className="mr-4">메뉴1</Link>
+              <Link href="/backtest" className="mr-4">포트폴리오 백테스트</Link>
               {/* <Link href="/login" className="mr-4">메뉴2</Link>
               <Link href="/login" className="mr-4">메뉴3</Link>
               <Link href="/login" className="mr-4">메뉴4</Link> */}
