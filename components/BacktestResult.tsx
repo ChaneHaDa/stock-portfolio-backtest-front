@@ -40,7 +40,7 @@ const BacktestResult = ({ result }: { result: any }) => {
   const headingStyle = "text-2xl font-bold mb-4 text-gray-800";
 
   // 포트폴리오 구성 데이터를 한 번만 가공
-  const portfolioData = processPortfolioData(result.portfolionput.portfolioRequestItemDTOList);
+  const portfolioData = processPortfolioData(result.portfolioInput.portfolioRequestItemDTOList);
   const totalPortfolioValue = portfolioData.reduce((acc, cur) => acc + cur.value, 0);
 
   // 달별 수익률 값들을 배열로 추출한 후 최고/최저 수익률 계산
