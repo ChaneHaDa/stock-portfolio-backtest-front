@@ -230,7 +230,7 @@ const BacktestResult = ({ result }: { result: any }) => {
           <div>
             <h3 className="text-lg font-semibold mb-4 text-gray-700">개별 종목 성과</h3>
             <div className="space-y-4">
-              {result.portfolioResponseItemDTOS.map((stock: any) => (
+              {result.portfolioResponseItemDTOList.map((stock: any) => (
                 <div key={stock.name} className="p-4 bg-gray-50 rounded-lg">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-medium text-gray-700">{stock.name}</span>
