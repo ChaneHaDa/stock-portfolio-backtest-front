@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from "@/config/apiConfig";
 
 export default function LoginPage() {
   const [credentials, setCredentials] = useState({
@@ -9,7 +10,7 @@ export default function LoginPage() {
     password: '',
   });
   const [responseMessage, setResponseMessage] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // 로그인 상태 관리
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,7 +22,7 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:8080/api/v1/auth/login', {
+      const response = await fetch(API_BASE_URL+'/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
