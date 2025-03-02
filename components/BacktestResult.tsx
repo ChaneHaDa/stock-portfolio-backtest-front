@@ -86,6 +86,13 @@ const BacktestResult = ({ result }: { result: any }) => {
             </span>
             <span className="text-gray-600">최저 월 수익률</span>
           </div>
+          {/* 최종 자산 */}
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-red-600">
+            {Number(result.totalAmount).toLocaleString('ko-KR')} 원
+            </span>
+            <span className="text-gray-600">최종 자산</span>
+          </div>
         </div>
       </div>
 
