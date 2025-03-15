@@ -40,7 +40,7 @@ const BacktestResult = ({ result }: { result: any }) => {
   const headingStyle = "text-2xl font-bold mb-4 text-gray-800";
 
   // 포트폴리오 구성 데이터를 한 번만 가공
-  const portfolioData = processPortfolioData(result.portfolioInput.portfolioRequestItemDTOList);
+  const portfolioData = processPortfolioData(result.portfolioInput.portfolioBacktestRequestItemDTOList);
   const totalPortfolioValue = portfolioData.reduce((acc, cur) => acc + cur.value, 0);
 
   // 달별 수익률 값들을 배열로 추출한 후 최고/최저 수익률 계산
@@ -237,7 +237,7 @@ const BacktestResult = ({ result }: { result: any }) => {
           <div>
             <h3 className="text-lg font-semibold mb-4 text-gray-700">개별 종목 성과</h3>
             <div className="space-y-4">
-              {result.portfolioResponseItemDTOList.map((stock: any) => (
+              {result.portfolioBacktestResponseItemDTOList.map((stock: any) => (
                 <div key={stock.name} className="p-4 bg-gray-50 rounded-lg">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-medium text-gray-700">{stock.name}</span>

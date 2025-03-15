@@ -180,7 +180,7 @@ const PortfolioForm = () => {
         amount: Number(amount),
         portfolioBacktestRequestItemDTOList: portfolioItems.map((item) => ({
           stockId: item.stockId,
-          // stockName: item.stockName,
+          stockName: item.stockName,
           weight: parseFloat(item.weight),
         })),
       }),
