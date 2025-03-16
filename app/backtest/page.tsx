@@ -238,7 +238,7 @@ const PortfolioForm = () => {
     0
   );
 
-  // 가중치 유효성 검사
+  // 가중치 유효성 검사 -> 소수 범위 문제
   const isWeightValid = Math.abs(totalWeight - 1) < 0.0001;
 
   return (
