@@ -1,6 +1,6 @@
 // app/layout.tsx
 import "./globals.css";
-import Header from "@/components/Header"; // Header 컴포넌트의 경로에 맞게 조정
+import Header from "@/components/Header";
 
 export const metadata = {
   title: "main page",
