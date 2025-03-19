@@ -16,12 +16,24 @@ import {
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/config/apiConfig";
 
+interface SaveModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: ({ name, description }: { name: string; description: string }) => Promise<void>;
+  isLoading: boolean;
+}
+
+interface Data {
+  name: string;
+  description: string;
+}
+
 // 저장 모달 컴포넌트
-const SaveModal = ({ isOpen, onClose, onSave, isLoading }) => {
+const SaveModal = ({ isOpen, onClose, onSave, isLoading }: SaveModalProps) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!name.trim()) {
       alert("이름을 입력해주세요.");
@@ -31,7 +43,6 @@ const SaveModal = ({ isOpen, onClose, onSave, isLoading }) => {
     try {
       await onSave({ name, description });
     } catch (error) {
-      // 오류 처리는 상위 컴포넌트에서 수행
       console.error("저장 오류:", error);
     }
   };
@@ -191,7 +202,7 @@ const BacktestResult = ({ result }: { result: any }) => {
   };
 
   // 모달에서 저장 버튼 클릭 시 처리
-  const handleSaveConfirm = async (data) => {
+  const handleSaveConfirm = async (data : Data) => {
     if (!accessToken) {
       alert("로그인이 필요합니다.");
       return Promise.reject("로그인이 필요합니다.");
@@ -243,10 +254,15 @@ const BacktestResult = ({ result }: { result: any }) => {
       alert("백테스트 결과가 성공적으로 저장되었습니다.");
       setIsModalOpen(false);
       return Promise.resolve();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("저장 오류:", error);
-      alert(`저장 중 오류가 발생했습니다: ${error.message}`);
-      return Promise.reject(error);
+      if (error instanceof Error) {
+        alert(`저장 중 오류가 발생했습니다: ${error.message}`);
+        return Promise.reject(error);
+      } else {
+        alert("저장 중 알 수 없는 오류가 발생했습니다.");
+        return Promise.reject(new Error("알 수 없는 오류"));
+      }
     } finally {
       setIsSaving(false);
     }
