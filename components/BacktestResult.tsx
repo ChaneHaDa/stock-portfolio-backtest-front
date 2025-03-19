@@ -28,6 +28,12 @@ interface Data {
   description: string;
 }
 
+interface PortfolioItem {
+  stockId: number;
+  stockName: string;
+  weight: number;
+}
+
 // 저장 모달 컴포넌트
 const SaveModal = ({ isOpen, onClose, onSave, isLoading }: SaveModalProps) => {
   const [name, setName] = useState("");
@@ -212,8 +218,9 @@ const BacktestResult = ({ result }: { result: any }) => {
     
     try {
       // API 요청 데이터 준비
-      const portfolioItemRequestDTOList = result.portfolioInput.portfolioBacktestRequestItemDTOList.map(item => ({
+      const portfolioItemRequestDTOList = (result.portfolioInput.portfolioBacktestRequestItemDTOList as PortfolioItem[]).map(item => ({
         stockId: item.stockId,
+        stockName: item.stockName,
         weight: item.weight
       }));
       
@@ -225,7 +232,7 @@ const BacktestResult = ({ result }: { result: any }) => {
         startDate: result.portfolioInput.startDate,
         endDate: result.portfolioInput.endDate,
         ror: result.totalRor,
-        volatility: result.volatility || 0, // 변동성 데이터가 없는 경우 기본값 0
+        volatility: result.volatility || 0,
         price: result.totalAmount,
         portfolioItemRequestDTOList: portfolioItemRequestDTOList
       };
