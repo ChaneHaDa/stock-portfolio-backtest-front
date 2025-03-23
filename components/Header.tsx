@@ -48,6 +48,14 @@ const Header = () => {
       <hr className="border-t border-gray-300 my-1" />
       <div className="max-w-[1200px] mx-auto">
         <div>
+          {isAuthenticated ? (
+            <Link href="/portfolio" className="mr-4">
+              내 포트폴리오
+            </Link>
+          ) : (
+            <>
+            </>
+          )}
           <Link href="/backtest" className="mr-4">
             포트폴리오 백테스트
           </Link>
