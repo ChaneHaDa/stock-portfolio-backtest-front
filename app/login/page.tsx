@@ -34,15 +34,32 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok && data.status === 'success') {
-        localStorage.setItem('accessToken', data.data.accessToken);
-        setIsAuthenticated(true);
-        setResponseMessage('로그인 성공!');
-        
-        router.push('/dashboard');
+        // 토큰이 실제로 존재하는지 확인
+        if (data.data?.accessToken) {
+          // 토큰 저장
+          localStorage.setItem('accessToken', data.data.accessToken);
+          
+          // 만약 만료 시간이 있다면 함께 저장
+          if (data.data.expiresIn) {
+            const expiryTime = new Date().getTime() + data.data.expiresIn * 1000;
+            localStorage.setItem('tokenExpiry', expiryTime.toString());
+          }
+          
+          // 인증 상태 업데이트
+          setIsAuthenticated(true);
+          setResponseMessage('로그인 성공!');
+          
+          // 리디렉션
+          router.push('/dashboard');
+        } else {
+          // 토큰이 없는 경우 오류 처리
+          setResponseMessage('로그인은 성공했으나 토큰을 받지 못했습니다.');
+          console.error('No access token received');
+        }
       } else {
-        setIsAuthenticated(false);
-        setResponseMessage(data.message || '로그인 실패!');
-      }
+        // 응답이 성공적이지 않은 경우
+        setResponseMessage(data.message || '로그인 실패');
+      }      
     } catch (error) {
       console.error('로그인 요청 중 에러 발생:', error);
       setIsAuthenticated(false);
