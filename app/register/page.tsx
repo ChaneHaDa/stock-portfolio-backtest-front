@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react'; // useCallback 추가
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from "@/config/apiConfig";
 
@@ -15,18 +15,83 @@ export default function RegisterPage() {
 
   const [responseMessage, setResponseMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isUsernameChecked, setIsUsernameChecked] = useState(false); // ID 중복 확인 상태
+  const [isUsernameDisabled, setIsUsernameDisabled] = useState(false); // ID 입력 필드 비활성화 상태
   const router = useRouter(); // useRouter 사용
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    let formattedValue = value;
+    if (name === 'phoneNumber') {
+      // 숫자만 추출
+      const digits = value.replace(/\D/g, '');
+      // 000-0000-0000 형식으로 포맷팅
+      if (digits.length <= 3) {
+        formattedValue = digits;
+      } else if (digits.length <= 7) {
+        formattedValue = `${digits.slice(0, 3)}-${digits.slice(3)}`;
+      } else {
+        formattedValue = `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
+      }
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: formattedValue }));
+
+    // ID 입력값이 변경되면 중복 확인 상태 초기화
+    if (name === 'username') {
+      setIsUsernameChecked(false);
+      setIsUsernameDisabled(false);
+      setResponseMessage(''); // 관련 메시지 초기화
+    }
+  }, []); // useCallback 사용
+
+  // ID 중복 확인 함수
+  const handleCheckUsername = async () => {
+    if (!formData.username) {
+      setResponseMessage('ID를 입력해주세요.');
+      setIsSuccess(false);
+      return;
+    }
+
+    try {
+      // API_BASE_URL을 사용하여 URL 구성
+      const checkUrl = `${API_BASE_URL}/auth/check-username?username=${encodeURIComponent(formData.username)}`;
+      const response = await fetch(checkUrl);
+
+      if (response.ok) { // 200 OK
+        setResponseMessage('사용 가능한 ID입니다.');
+        setIsSuccess(true);
+        setIsUsernameChecked(true);
+        setIsUsernameDisabled(true); // ID 필드 비활성화
+      } else {
+        const errorData = await response.json();
+        setResponseMessage(`사용할 수 없는 ID입니다: ${errorData.message || response.statusText}`);
+        setIsSuccess(false);
+        setIsUsernameChecked(false);
+        setIsUsernameDisabled(false);
+      }
+    } catch (error) {
+      console.error('ID 중복 확인 중 에러 발생:', error);
+      setResponseMessage('ID 중복 확인 중 문제가 발생했습니다.');
+      setIsSuccess(false);
+      setIsUsernameChecked(false);
+      setIsUsernameDisabled(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // ID 중복 확인 여부 검사
+    if (!isUsernameChecked) {
+      setResponseMessage('ID 중복 확인을 먼저 진행해주세요.');
+      setIsSuccess(false);
+      return;
+    }
+
     try {
-      const response = await fetch(API_BASE_URL+'/auth/register', {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, { // URL 수정
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,8 +132,18 @@ export default function RegisterPage() {
             value={formData.username}
             onChange={handleChange}
             required
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
+            disabled={isUsernameDisabled} // 비활성화 상태 적용
+            className={`w-full mt-1 p-2 border border-gray-300 rounded ${isUsernameDisabled ? 'bg-gray-100' : ''}`} // 비활성화 시 배경색 변경
+            placeholder="예: userid123"
           />
+          <button
+            type="button"
+            onClick={handleCheckUsername}
+            disabled={isUsernameDisabled || !formData.username} // 이미 확인했거나 ID가 없으면 비활성화
+            className="mt-2 px-4 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 disabled:bg-gray-300"
+          >
+            중복 확인
+          </button>
         </div>
         <div>
           <label htmlFor="password" className="block text-sm font-medium">
@@ -82,6 +157,7 @@ export default function RegisterPage() {
             onChange={handleChange}
             required
             className="w-full mt-1 p-2 border border-gray-300 rounded"
+            placeholder="비밀번호를 입력하세요"
           />
         </div>
         <div>
@@ -96,6 +172,7 @@ export default function RegisterPage() {
             onChange={handleChange}
             required
             className="w-full mt-1 p-2 border border-gray-300 rounded"
+            placeholder="예: example@email.com"
           />
         </div>
         <div>
@@ -110,6 +187,7 @@ export default function RegisterPage() {
             onChange={handleChange}
             required
             className="w-full mt-1 p-2 border border-gray-300 rounded"
+            placeholder="예: 홍길동"
           />
         </div>
         <div>
@@ -124,11 +202,13 @@ export default function RegisterPage() {
             onChange={handleChange}
             required
             className="w-full mt-1 p-2 border border-gray-300 rounded"
+            placeholder="예: 010-1234-5678"
           />
         </div>
         <button
           type="submit"
-          className="w-full bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
+          disabled={!isUsernameChecked}
+          className="w-full bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 disabled:bg-gray-300"
         >
           회원가입
         </button>
