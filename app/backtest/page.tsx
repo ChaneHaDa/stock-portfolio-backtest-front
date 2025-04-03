@@ -181,7 +181,8 @@ const PortfolioForm = () => {
         portfolioBacktestRequestItemDTOList: portfolioItems.map((item) => ({
           stockId: item.stockId,
           stockName: item.stockName,
-          weight: parseFloat(item.weight),
+          // API 요청 시 가중치를 100으로 나누어 전송
+          weight: parseFloat(item.weight || "0") / 100, 
         })),
       }),
     });
@@ -238,8 +239,10 @@ const PortfolioForm = () => {
     0
   );
 
-  // 가중치 유효성 검사 -> 소수 범위 문제
-  const isWeightValid = Math.abs(totalWeight - 1) < 0.0001;
+  // 가중치 유효성 검사 -> 합계가 100%인지 확인
+  const isWeightValid = Math.abs(totalWeight - 100) < 0.0001;
+  // 종목명 유효성 검사 -> 모든 항목에 종목명이 있는지 확인
+  const isStockNameValid = portfolioItems.every(item => item.stockName.trim() !== "");
 
   return (
     <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-[960px] mx-auto">
@@ -299,8 +302,8 @@ const PortfolioForm = () => {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-gray-700">포트폴리오 구성</h2>
             <div className={`text-sm font-medium ${isWeightValid ? "text-green-600" : "text-red-600"}`}>
-              총 가중치: {totalWeight.toFixed(2)}
-              {!isWeightValid && " (가중치 합계는 1이 되어야 합니다)"}
+              총 가중치: {totalWeight.toFixed(2)}%
+              {!isWeightValid && " (가중치 합계는 100%가 되어야 합니다)"}
             </div>
           </div>
 
@@ -308,7 +311,7 @@ const PortfolioForm = () => {
             <div className="grid grid-cols-12 gap-4 mb-2 text-gray-600 font-medium px-2">
               <div className="col-span-1">번호</div>
               <div className="col-span-7">종목명</div>
-              <div className="col-span-2 text-center">비중</div>
+              <div className="col-span-2 text-center">비중 (%)</div>
               <div className="col-span-2 text-center">관리</div>
             </div>
             
@@ -353,8 +356,8 @@ const PortfolioForm = () => {
                       type="number"
                       id={`weight-${index}`}
                       min="0"
-                      max="1"
-                      step="0.01"
+                      max="100" // 최대값을 100으로 변경
+                      step="1" // 단위를 1로 변경
                       required
                       value={item.weight}
                       onChange={(e) => handleChange(index, "weight", e.target.value)}
@@ -403,9 +406,9 @@ const PortfolioForm = () => {
         <div className="flex justify-center">
           <button
             type="submit"
-            disabled={!isWeightValid}
+            disabled={!isWeightValid || !isStockNameValid} // 종목명 유효성 검사 추가
             className={`flex items-center px-6 py-3 rounded-lg text-lg font-medium transition duration-200 ${
-              isWeightValid
+              isWeightValid && isStockNameValid // 두 조건 모두 만족해야 활성화
                 ? "bg-blue-600 text-white hover:bg-blue-700"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
