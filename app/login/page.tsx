@@ -50,7 +50,7 @@ export default function LoginPage() {
           setResponseMessage('로그인 성공!');
           
           // 리디렉션
-          router.push('/dashboard');
+          router.push('/portfolio');
         } else {
           // 토큰이 없는 경우 오류 처리
           setResponseMessage('로그인은 성공했으나 토큰을 받지 못했습니다.');
