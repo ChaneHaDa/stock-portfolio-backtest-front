@@ -40,6 +40,13 @@ export default function MyPortfolio() {
           }
         });
 
+        // 404 응답은 데이터가 없는 것으로 간주
+        if (response.status === 404) {
+          setPortfolios([]);
+          setLoading(false); // 로딩 상태 종료
+          return; // 함수 종료
+        }
+
         if (!response.ok) {
           throw new Error(`API 요청 실패: ${response.status}`);
         }
