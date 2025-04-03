@@ -22,6 +22,8 @@ export default function RegisterPage() {
   const [isSendingEmail, setIsSendingEmail] = useState(false); // 이메일 전송 중 상태
   const [emailResponseMessage, setEmailResponseMessage] = useState(''); // 이메일 관련 메시지
   const [isEmailSuccess, setIsEmailSuccess] = useState(false); // 이메일 작업 성공 여부
+  const [isEmailVerified, setIsEmailVerified] = useState(false); // 이메일 인증 완료 여부
+  const [isVerifyingEmail, setIsVerifyingEmail] = useState(false); // 이메일 인증 확인 중 상태
   const router = useRouter(); // useRouter 사용
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,6 +57,7 @@ export default function RegisterPage() {
       setIsEmailSent(false);
       setEmailVerificationCode('');
       setEmailResponseMessage('');
+      setIsEmailVerified(false); // 이메일 변경 시 인증 상태 초기화
     }
   }, []); // useCallback 사용
 
@@ -134,6 +137,47 @@ export default function RegisterPage() {
     }
   };
 
+  // 이메일 인증 코드 확인 함수
+  const handleVerifyEmail = async () => {
+    if (!emailVerificationCode) {
+      setEmailResponseMessage('인증 코드를 입력해주세요.');
+      setIsEmailSuccess(false);
+      return;
+    }
+    setIsVerifyingEmail(true);
+    setEmailResponseMessage(''); // 이전 메시지 초기화
+
+    try {
+      const verifyUrl = `${API_BASE_URL}/auth/verify-email?email=${encodeURIComponent(formData.email)}&token=${encodeURIComponent(emailVerificationCode)}`;
+      const response = await fetch(verifyUrl, { method: 'GET' });
+
+      if (response.ok) {
+        setEmailResponseMessage('이메일 인증이 완료되었습니다.');
+        setIsEmailSuccess(true);
+        setIsEmailVerified(true); // 인증 완료 상태 업데이트
+        // 성공 시 이메일, 인증 코드 입력 필드, 인증 버튼들 비활성화 (이미 disabled 속성으로 처리됨)
+      } else {
+        let errorMsg = `이메일 인증 실패: ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          errorMsg = `이메일 인증 실패: ${errorData.message || response.statusText}`;
+        } catch (jsonError) {
+          console.error('Error parsing verification error response:', jsonError);
+        }
+        setEmailResponseMessage(errorMsg);
+        setIsEmailSuccess(false);
+        setIsEmailVerified(false);
+      }
+    } catch (error) {
+      console.error('이메일 인증 확인 중 에러 발생:', error);
+      setEmailResponseMessage('이메일 인증 확인 중 문제가 발생했습니다.');
+      setIsEmailSuccess(false);
+      setIsEmailVerified(false);
+    } finally {
+      setIsVerifyingEmail(false);
+    }
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -144,6 +188,14 @@ export default function RegisterPage() {
       setIsSuccess(false);
       return;
     }
+
+    // 이메일 인증 여부 검사
+    if (!isEmailVerified) {
+        setResponseMessage('이메일 인증을 완료해주세요.');
+        setIsSuccess(false);
+        return;
+    }
+
 
     try {
       const response = await fetch(`${API_BASE_URL}/auth/register`, { // URL 수정
@@ -227,13 +279,13 @@ export default function RegisterPage() {
             onChange={handleChange}
             required
             placeholder="예: example@email.com"
-            disabled={isEmailSent} // 이메일 전송 후 비활성화
-            className={`w-full mt-1 p-2 border border-gray-300 rounded ${isEmailSent ? 'bg-gray-100' : ''}`}
+            disabled={isEmailVerified || isEmailSent} // 인증 완료 또는 전송 후 비활성화
+            className={`w-full mt-1 p-2 border border-gray-300 rounded ${isEmailVerified || isEmailSent ? 'bg-gray-100' : ''}`}
           />
           <button
             type="button"
             onClick={handleSendVerificationEmail}
-            disabled={!formData.email || isEmailSent || isSendingEmail} // 이메일 없거나, 이미 보냈거나, 보내는 중이면 비활성화
+            disabled={!formData.email || isEmailVerified || isEmailSent || isSendingEmail} // 이메일 없거나, 인증 완료, 이미 보냈거나, 보내는 중이면 비활성화
             className="mt-2 px-4 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 disabled:bg-gray-300"
           >
             {isSendingEmail ? '전송 중...' : '인증 메일 전송'}
@@ -257,9 +309,18 @@ export default function RegisterPage() {
                 value={emailVerificationCode}
                 onChange={(e) => setEmailVerificationCode(e.target.value)} // 직접 상태 업데이트
                 required
-                className="w-full mt-1 p-2 border border-gray-300 rounded"
+                disabled={isEmailVerified || isVerifyingEmail} // 인증 완료 또는 확인 중 비활성화
+                className={`w-full mt-1 p-2 border border-gray-300 rounded ${isEmailVerified ? 'bg-gray-100' : ''}`}
                 placeholder="이메일로 받은 인증 코드를 입력하세요"
               />
+              <button
+                type="button"
+                onClick={handleVerifyEmail}
+                disabled={!emailVerificationCode || isEmailVerified || isVerifyingEmail} // 코드 없거나, 인증 완료, 확인 중이면 비활성화
+                className="mt-2 px-4 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600 disabled:bg-gray-300"
+              >
+                {isVerifyingEmail ? '확인 중...' : '인증 확인'}
+              </button>
             </div>
           )}
         </div>
@@ -295,7 +356,7 @@ export default function RegisterPage() {
         </div>
         <button
           type="submit"
-          disabled={!isUsernameChecked}
+          disabled={!isUsernameChecked || !isEmailVerified} // ID 중복 확인 및 이메일 인증 완료 필요
           className="w-full bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 disabled:bg-gray-300"
         >
           회원가입
