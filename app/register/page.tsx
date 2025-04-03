@@ -17,6 +17,11 @@ export default function RegisterPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isUsernameChecked, setIsUsernameChecked] = useState(false); // ID 중복 확인 상태
   const [isUsernameDisabled, setIsUsernameDisabled] = useState(false); // ID 입력 필드 비활성화 상태
+  const [emailVerificationCode, setEmailVerificationCode] = useState(''); // 이메일 인증 코드
+  const [isEmailSent, setIsEmailSent] = useState(false); // 이메일 전송 여부
+  const [isSendingEmail, setIsSendingEmail] = useState(false); // 이메일 전송 중 상태
+  const [emailResponseMessage, setEmailResponseMessage] = useState(''); // 이메일 관련 메시지
+  const [isEmailSuccess, setIsEmailSuccess] = useState(false); // 이메일 작업 성공 여부
   const router = useRouter(); // useRouter 사용
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,6 +48,13 @@ export default function RegisterPage() {
       setIsUsernameChecked(false);
       setIsUsernameDisabled(false);
       setResponseMessage(''); // 관련 메시지 초기화
+    }
+
+    // 이메일 입력값이 변경되면 이메일 인증 상태 초기화
+    if (name === 'email') {
+      setIsEmailSent(false);
+      setEmailVerificationCode('');
+      setEmailResponseMessage('');
     }
   }, []); // useCallback 사용
 
@@ -79,6 +91,49 @@ export default function RegisterPage() {
       setIsUsernameDisabled(false);
     }
   };
+
+  // 이메일 인증 메일 전송 함수
+  const handleSendVerificationEmail = async () => {
+    if (!formData.email) {
+      setEmailResponseMessage('이메일을 입력해주세요.');
+      setIsEmailSuccess(false);
+      return;
+    }
+    setIsSendingEmail(true); // 전송 시작
+    setEmailResponseMessage(''); // 이전 메시지 초기화
+
+    try {
+      const emailUrl = `${API_BASE_URL}/auth/initiate-email?email=${encodeURIComponent(formData.email)}`;
+      const response = await fetch(emailUrl, { method: 'GET' }); // GET 요청 명시
+
+      if (response.ok) { // 200 OK 또는 성공적인 상태 코드
+        setEmailResponseMessage('인증 메일이 전송되었습니다. 이메일을 확인해주세요.');
+        setIsEmailSuccess(true);
+        setIsEmailSent(true); // 이메일 전송 성공 상태 업데이트
+      } else {
+        // 서버에서 오류 메시지를 보냈는지 확인
+        let errorMsg = `인증 메일 전송 실패: ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          errorMsg = `인증 메일 전송 실패: ${errorData.message || response.statusText}`;
+        } catch (jsonError) {
+          // JSON 파싱 실패 시 기본 메시지 사용
+          console.error('Error parsing error response:', jsonError);
+        }
+        setEmailResponseMessage(errorMsg);
+        setIsEmailSuccess(false);
+        setIsEmailSent(false);
+      }
+    } catch (error) {
+      console.error('이메일 인증 메일 전송 중 에러 발생:', error);
+      setEmailResponseMessage('이메일 인증 메일 전송 중 문제가 발생했습니다.');
+      setIsEmailSuccess(false);
+      setIsEmailSent(false);
+    } finally {
+      setIsSendingEmail(false); // 전송 완료 (성공/실패 무관)
+    }
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,9 +226,42 @@ export default function RegisterPage() {
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
             placeholder="예: example@email.com"
+            disabled={isEmailSent} // 이메일 전송 후 비활성화
+            className={`w-full mt-1 p-2 border border-gray-300 rounded ${isEmailSent ? 'bg-gray-100' : ''}`}
           />
+          <button
+            type="button"
+            onClick={handleSendVerificationEmail}
+            disabled={!formData.email || isEmailSent || isSendingEmail} // 이메일 없거나, 이미 보냈거나, 보내는 중이면 비활성화
+            className="mt-2 px-4 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 disabled:bg-gray-300"
+          >
+            {isSendingEmail ? '전송 중...' : '인증 메일 전송'}
+          </button>
+          {/* 이메일 관련 메시지 표시 */}
+          {emailResponseMessage && (
+            <div className={`mt-2 text-sm ${isEmailSuccess ? 'text-green-600' : 'text-red-600'}`}>
+              {emailResponseMessage}
+            </div>
+          )}
+          {/* 인증 코드 입력 필드 (이메일 전송 후 표시) */}
+          {isEmailSent && (
+            <div className="mt-4">
+              <label htmlFor="emailVerificationCode" className="block text-sm font-medium">
+                인증 코드
+              </label>
+              <input
+                type="text"
+                id="emailVerificationCode"
+                name="emailVerificationCode"
+                value={emailVerificationCode}
+                onChange={(e) => setEmailVerificationCode(e.target.value)} // 직접 상태 업데이트
+                required
+                className="w-full mt-1 p-2 border border-gray-300 rounded"
+                placeholder="이메일로 받은 인증 코드를 입력하세요"
+              />
+            </div>
+          )}
         </div>
         <div>
           <label htmlFor="name" className="block text-sm font-medium">
