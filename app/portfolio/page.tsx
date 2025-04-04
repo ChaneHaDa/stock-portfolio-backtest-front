@@ -70,6 +70,48 @@ export default function MyPortfolio() {
     fetchPortfolios();
   }, []);
 
+  // 포트폴리오 삭제 함수
+  const handleDelete = async (id: number) => {
+    if (!confirm("정말로 이 포트폴리오를 삭제하시겠습니까?")) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(`${API_BASE_URL}/portfolios/${id}`, {
+        method: "DELETE",
+        headers: {
+          accept: "*/*",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      });
+
+      if (!response.ok) {
+        // 404는 이미 삭제된 경우일 수 있으므로 성공으로 간주하거나 특정 메시지 표시
+        if (response.status === 404) {
+           console.warn(`Portfolio with id ${id} not found, possibly already deleted.`);
+           // 화면에서 제거
+           setPortfolios((prevPortfolios) =>
+             prevPortfolios.filter((portfolio) => portfolio.id !== id)
+           );
+           return;
+        }
+        throw new Error(`API 요청 실패: ${response.status}`);
+      }
+
+      // 성공적으로 삭제된 경우, 상태 업데이트하여 화면에서 제거
+      setPortfolios((prevPortfolios) =>
+        prevPortfolios.filter((portfolio) => portfolio.id !== id)
+      );
+      alert("포트폴리오가 성공적으로 삭제되었습니다.");
+
+    } catch (err) {
+      setError("포트폴리오 삭제 중 오류가 발생했습니다.");
+      console.error("Error deleting portfolio:", err);
+      alert("포트폴리오 삭제에 실패했습니다."); // 사용자에게 실패 알림
+    }
+  };
+
   // 수익률 포맷팅 함수
   const formatRor = (ror: number): string => {
     return `${ror.toFixed(2)}%`;
@@ -114,6 +156,7 @@ export default function MyPortfolio() {
                 <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">수익률</th>
                 <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">변동성</th>
                 <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">운용 기간</th>
+                <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">작업</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -129,6 +172,14 @@ export default function MyPortfolio() {
                   <td className="py-4 px-4 whitespace-nowrap">{portfolio.volatility.toFixed(2)}%</td>
                   <td className="py-4 px-4 whitespace-nowrap text-gray-600">
                     {portfolio.startDate} ~ {portfolio.endDate}
+                  </td>
+                  <td className="py-4 px-4 whitespace-nowrap">
+                    <button
+                      onClick={() => handleDelete(portfolio.id)}
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-xs"
+                    >
+                      삭제
+                    </button>
                   </td>
                 </tr>
               ))}
