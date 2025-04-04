@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "@/config/apiConfig";
 
 // 포트폴리오 아이템의 타입 정의
 interface Portfolio {
@@ -32,7 +33,7 @@ export default function MyPortfolio() {
       try {
         // localStorage에서 토큰 가져오기
         const token = localStorage.getItem("accessToken");
-        const response = await fetch("http://localhost:8080/api/v1/portfolios", {
+        const response = await fetch(API_BASE_URL+"/portfolios", {
           method: "GET",
           headers: {
             accept: "*/*",
