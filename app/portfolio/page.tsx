@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link"; // Link 임포트 추가
 import { API_BASE_URL } from "@/config/apiConfig";
 
 // 포트폴리오 아이템의 타입 정의
@@ -162,7 +163,12 @@ export default function MyPortfolio() {
             <tbody className="divide-y divide-gray-200">
               {portfolios.map((portfolio) => (
                 <tr key={portfolio.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="py-4 px-4 whitespace-nowrap font-medium">{portfolio.name}</td>
+                  {/* 포트폴리오 이름을 Link로 감싸기 */}
+                  <td className="py-4 px-4 whitespace-nowrap font-medium">
+                    <Link href={`/portfolio/${portfolio.id}`} className="text-blue-600 hover:underline">
+                      {portfolio.name}
+                    </Link>
+                  </td>
                   <td className="py-4 px-4 whitespace-nowrap text-gray-600">{portfolio.description}</td>
                   <td className="py-4 px-4 whitespace-nowrap">{formatAmount(portfolio.amount)}</td>
                   <td className="py-4 px-4 whitespace-nowrap">{formatAmount(portfolio.price)}</td>
