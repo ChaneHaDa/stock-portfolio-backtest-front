@@ -14,30 +14,66 @@ import {
   Legend,
 } from "recharts";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // useRouter 추가
 import { API_BASE_URL } from "@/config/apiConfig";
 
-interface SaveModalProps {
+// 저장/수정 모달 Props
+interface SaveUpdateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: ({ name, description }: { name: string; description: string }) => Promise<void>;
+  onConfirm: ({ name, description }: { name: string; description: string }) => Promise<void>; // 이름 변경: onSave -> onConfirm
   isLoading: boolean;
+  isUpdateMode: boolean; // 수정 모드인지 여부 추가
+  initialName?: string; // 수정 모드 시 초기 이름
+  initialDescription?: string; // 수정 모드 시 초기 설명
 }
 
-interface Data {
+// 저장/수정 시 필요한 데이터 인터페이스
+interface SaveUpdateData {
   name: string;
   description: string;
 }
 
+// 기존 PortfolioItem 인터페이스 (백테스트 결과 저장 시 사용)
 interface PortfolioItem {
   stockId: number;
   stockName: string;
   weight: number;
 }
 
-// 저장 모달 컴포넌트
-const SaveModal = ({ isOpen, onClose, onSave, isLoading }: SaveModalProps) => {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+// 수정된 포트폴리오 데이터 인터페이스 (sessionStorage에서 로드)
+interface UpdatedPortfolioData {
+    id: number;
+    name: string;
+    description: string;
+    amount: number;
+    startDate: string;
+    endDate: string;
+    portfolioItemRequestDTOList: Array<{ stockId: number | null; weight: number }>;
+}
+
+
+// 저장/수정 모달 컴포넌트
+const SaveUpdateModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  isLoading,
+  isUpdateMode,
+  initialName = "",
+  initialDescription = ""
+}: SaveUpdateModalProps) => {
+  const [name, setName] = useState(initialName);
+  const [description, setDescription] = useState(initialDescription);
+
+  // 모달이 열릴 때 초기값 설정
+  useEffect(() => {
+    if (isOpen) {
+      setName(initialName);
+      setDescription(initialDescription);
+    }
+  }, [isOpen, initialName, initialDescription]);
+
 
   const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,11 +81,12 @@ const SaveModal = ({ isOpen, onClose, onSave, isLoading }: SaveModalProps) => {
       alert("이름을 입력해주세요.");
       return;
     }
-    
+
     try {
-      await onSave({ name, description });
+      await onConfirm({ name, description }); // onConfirm 호출
     } catch (error) {
-      console.error("저장 오류:", error);
+      // 에러 처리는 onConfirm 내부 또는 호출하는 곳에서 수행
+      console.error("Save/Update Modal Error:", error);
     }
   };
 
@@ -59,9 +96,11 @@ const SaveModal = ({ isOpen, onClose, onSave, isLoading }: SaveModalProps) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 m-4">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-800">백테스트 결과 저장</h2>
-          <button 
-            onClick={onClose} 
+          <h2 className="text-xl font-bold text-gray-800">
+            {isUpdateMode ? "포트폴리오 수정 저장" : "백테스트 결과 저장"}
+          </h2>
+          <button
+            onClick={onClose}
             className="text-gray-500 hover:text-gray-700 transition-colors"
             disabled={isLoading}
           >
@@ -125,7 +164,7 @@ const SaveModal = ({ isOpen, onClose, onSave, isLoading }: SaveModalProps) => {
                   저장 중...
                 </>
               ) : (
-                "저장하기"
+                isUpdateMode ? "수정 저장" : "저장하기"
               )}
             </button>
           </div>
@@ -136,6 +175,7 @@ const SaveModal = ({ isOpen, onClose, onSave, isLoading }: SaveModalProps) => {
 };
 
 const BacktestResult = ({ result }: { result: any }) => {
+  const router = useRouter(); // useRouter 훅 사용
   // 데이터 가공 함수
   const processMonthlyData = (rorObject: { [key: string]: number }) => {
     return Object.entries(rorObject)
@@ -184,64 +224,108 @@ const BacktestResult = ({ result }: { result: any }) => {
   const lowestMonthlyRor =
     monthlyValues.length > 0 ? Math.min(...monthlyValues) : 0;
 
-  // 로그인 상태 판별 (localStorage의 accessToken)
+  // 로그인 상태
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accessToken, setAccessToken] = useState("");
-  
-  // 저장 모달 상태
+
+  // 수정 모드 상태 (sessionStorage 확인)
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
+  const [updatedPortfolioData, setUpdatedPortfolioData] = useState<UpdatedPortfolioData | null>(null);
+
+  // 저장/수정 모달 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  
+  const [isProcessing, setIsProcessing] = useState(false); // 저장/수정 진행 중 상태
+
   useEffect(() => {
     if (typeof window !== "undefined") {
+      // 로그인 토큰 확인
       const token = localStorage.getItem("accessToken");
       setIsAuthenticated(!!token);
       if (token) {
         setAccessToken(token);
       }
+
+      // 수정 모드 데이터 확인
+      const storedData = sessionStorage.getItem("updatedPortfolioData");
+      if (storedData) {
+        try {
+          const parsedData: UpdatedPortfolioData = JSON.parse(storedData);
+          setUpdatedPortfolioData(parsedData);
+          setIsUpdateMode(true);
+        } catch (e) {
+          console.error("Failed to parse updatedPortfolioData from sessionStorage:", e);
+          sessionStorage.removeItem("updatedPortfolioData"); // 파싱 실패 시 제거
+        }
+      } else {
+        setIsUpdateMode(false);
+        setUpdatedPortfolioData(null);
+      }
     }
   }, []);
 
-  // 저장하기 버튼 클릭 시 모달 열기
-  const handleSaveClick = () => {
+  // 저장/수정 버튼 클릭 시 모달 열기
+  const handleOpenModal = () => {
     setIsModalOpen(true);
   };
 
-  // 모달에서 저장 버튼 클릭 시 처리
-  const handleSaveConfirm = async (data : Data) => {
+  // 모달에서 확인 버튼 클릭 시 처리 (저장 또는 수정)
+  const handleConfirmAction = async (modalData: SaveUpdateData) => {
     if (!accessToken) {
       alert("로그인이 필요합니다.");
       return Promise.reject("로그인이 필요합니다.");
     }
 
-    setIsSaving(true);
-    
+    setIsProcessing(true);
+
     try {
-      // API 요청 데이터 준비
-      const portfolioItemRequestDTOList = (result.portfolioInput.portfolioBacktestRequestItemDTOList as PortfolioItem[]).map(item => ({
-        stockId: item.stockId,
-        stockName: item.stockName,
-        weight: item.weight
-      }));
-      
-      // API 요청 본문 구성
-      const requestBody = {
-        name: data.name,
-        description: data.description,
-        amount: result.portfolioInput.amount,
-        startDate: result.portfolioInput.startDate,
-        endDate: result.portfolioInput.endDate,
-        ror: result.totalRor,
-        volatility: result.volatility || 0,
-        price: result.totalAmount,
-        portfolioItemRequestDTOList: portfolioItemRequestDTOList
-      };
-      
-      console.log("API 요청 데이터:", requestBody);
-      
-      // API 호출
-      const response = await fetch(`${API_BASE_URL}/portfolios`, {
-        method: 'POST',
+      let response;
+      let requestBody;
+      let apiUrl;
+      let method;
+
+      if (isUpdateMode && updatedPortfolioData) {
+        // --- 수정 모드 (PUT 요청) ---
+        method = 'PUT';
+        apiUrl = `${API_BASE_URL}/portfolios/${updatedPortfolioData.id}`;
+        requestBody = {
+          ...updatedPortfolioData, // 기존 수정 데이터 (id, amount, startDate, endDate, items)
+          name: modalData.name, // 모달에서 입력받은 이름
+          description: modalData.description, // 모달에서 입력받은 설명
+          // 백테스트 결과 반영
+          ror: result.totalRor,
+          volatility: result.volatility || 0,
+          price: result.totalAmount,
+          portfolioItemRequestDTOList: updatedPortfolioData.portfolioItemRequestDTOList // items 포함
+        };
+        // id는 requestBody에 포함하지 않음
+
+      } else {
+        // --- 저장 모드 (POST 요청) ---
+        method = 'POST';
+        apiUrl = `${API_BASE_URL}/portfolios`;
+        const portfolioItemRequestDTOList = (result.portfolioInput.portfolioBacktestRequestItemDTOList as PortfolioItem[]).map(item => ({
+          stockId: item.stockId,
+          // stockName은 POST 요청 시 필요 없을 수 있음 (API 명세 확인 필요)
+          // stockName: item.stockName,
+          weight: item.weight
+        }));
+        requestBody = {
+          name: modalData.name,
+          description: modalData.description,
+          amount: result.portfolioInput.amount,
+          startDate: result.portfolioInput.startDate,
+          endDate: result.portfolioInput.endDate,
+          ror: result.totalRor,
+          volatility: result.volatility || 0,
+          price: result.totalAmount,
+          portfolioItemRequestDTOList: portfolioItemRequestDTOList
+        };
+      }
+
+      console.log(`API 요청 (${method}):`, apiUrl, requestBody);
+
+      response = await fetch(apiUrl, {
+        method: method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
@@ -249,31 +333,40 @@ const BacktestResult = ({ result }: { result: any }) => {
         },
         body: JSON.stringify(requestBody)
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(`저장 실패: ${response.status} ${response.statusText} ${JSON.stringify(errorData)}`);
+        throw new Error(`${isUpdateMode ? '수정' : '저장'} 실패: ${response.status} ${response.statusText} ${JSON.stringify(errorData)}`);
       }
-      
+
       const responseData = await response.json();
-      console.log("저장 성공:", responseData);
-      
-      alert("백테스트 결과가 성공적으로 저장되었습니다.");
+      console.log(`${isUpdateMode ? '수정' : '저장'} 성공:`, responseData);
+
+      alert(`포트폴리오가 성공적으로 ${isUpdateMode ? '수정' : '저장'}되었습니다.`);
       setIsModalOpen(false);
-      return Promise.resolve();
-    } catch (error: unknown) {
-      console.error("저장 오류:", error);
-      if (error instanceof Error) {
-        alert(`저장 중 오류가 발생했습니다: ${error.message}`);
-        return Promise.reject(error);
+
+      // 수정 모드 성공 시 sessionStorage 클리어 및 페이지 이동 (예: 포트폴리오 목록)
+      if (isUpdateMode) {
+        sessionStorage.removeItem("updatedPortfolioData");
+        sessionStorage.removeItem("backtestResult"); // 백테스트 결과도 제거
+        router.push(`/portfolio`); // 포트폴리오 목록 페이지로 이동 (또는 상세 페이지)
       } else {
-        alert("저장 중 알 수 없는 오류가 발생했습니다.");
-        return Promise.reject(new Error("알 수 없는 오류"));
+         sessionStorage.removeItem("backtestResult"); // 백테스트 결과 제거
+         router.push('/portfolio'); // 저장 후 포트폴리오 목록 페이지로 이동
       }
+
+      return Promise.resolve();
+
+    } catch (error: unknown) {
+      console.error(`${isUpdateMode ? '수정' : '저장'} 오류:`, error);
+      const message = error instanceof Error ? error.message : "알 수 없는 오류";
+      alert(`${isUpdateMode ? '수정' : '저장'} 중 오류가 발생했습니다: ${message}`);
+      return Promise.reject(error);
     } finally {
-      setIsSaving(false);
+      setIsProcessing(false);
     }
   };
+
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -283,17 +376,20 @@ const BacktestResult = ({ result }: { result: any }) => {
           백테스트 결과 분석
         </h1>
         <div className="flex items-center space-x-4">
+          {/* 저장 또는 수정 버튼 */}
           {isAuthenticated && (
             <button
-              onClick={handleSaveClick}
-              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center"
+              onClick={handleOpenModal}
+              className={`${isUpdateMode ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-green-600 hover:bg-green-700'} text-white px-6 py-3 rounded-lg transition-colors flex items-center`}
+              disabled={isProcessing} // 처리 중 비활성화
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
               </svg>
-              저장하기
+              {isUpdateMode ? "수정 저장하기" : "저장하기"}
             </button>
           )}
+          {/* 새 백테스트 실행 버튼 */}
           <Link
             href="/backtest"
             className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center"
@@ -506,12 +602,15 @@ const BacktestResult = ({ result }: { result: any }) => {
         </div>
       </div>
 
-      {/* 저장 모달 */}
-      <SaveModal 
+      {/* 저장/수정 모달 */}
+      <SaveUpdateModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSave={handleSaveConfirm}
-        isLoading={isSaving}
+        onConfirm={handleConfirmAction}
+        isLoading={isProcessing}
+        isUpdateMode={isUpdateMode}
+        initialName={isUpdateMode ? updatedPortfolioData?.name : ""} // 수정 모드 시 초기값 전달
+        initialDescription={isUpdateMode ? updatedPortfolioData?.description : ""} // 수정 모드 시 초기값 전달
       />
     </div>
   );
