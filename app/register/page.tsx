@@ -215,7 +215,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-8 bg-white rounded-xl shadow-md">
+    <div className="max-w-md mx-auto min-w-[400px] mt-10 p-8 bg-white rounded-xl shadow-md">
       <h1 className="text-2xl font-bold mb-6 text-center text-indigo-700">회원가입</h1>
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* 아이디 필드 */}
