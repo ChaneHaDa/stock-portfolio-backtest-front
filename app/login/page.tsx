@@ -68,8 +68,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center flex-grow"> 
-      <div className="w-full max-w-lg p-8 space-y-6 bg-white rounded-xl shadow-lg">
+    <div className="flex flex-col w-full items-center flex-grow"> 
+      <div className="w-full min-w-[300px] max-w-[500px] p-8 space-y-6 bg-white rounded-xl shadow-lg">
         <h1 className="text-3xl font-bold text-center text-gray-800">로그인</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
