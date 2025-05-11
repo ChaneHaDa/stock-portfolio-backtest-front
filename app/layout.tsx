@@ -1,20 +1,24 @@
 // app/layout.tsx
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 
-export const metadata = {
-  title: "main page",
-  description: "description",
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "포트폴리오 백테스팅",
+  description: "나만의 투자 포트폴리오를 구성하고 백테스팅을 통해 전략을 검증해보세요.",
 };
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="ko">
-      <body className="bg-gray-100 min-h-screen flex flex-col">
+      <body className={`${inter.className} antialiased`}>
         <Header />
-        {/* main 영역이 flex 컨테이너가 되어 내부 콘텐츠를 중앙 정렬하도록 수정 */}
-        <main className="p-8 flex-grow flex flex-col items-center">{children}</main> 
-        {/* 푸터가 항상 하단에 고정되도록 mt-auto 사용 */}
+        <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+          {children}
+        </main>
         <footer className="bg-gray-800 text-white text-center p-4 mt-auto flex-shrink-0"> 
           <p>© 2025 Stock Helper</p>
         </footer>
