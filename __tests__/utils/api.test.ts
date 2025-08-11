@@ -40,19 +40,29 @@ describe('api utilities', () => {
         status: 404,
         statusText: 'Not Found',
         json: () => Promise.resolve({ message: 'Resource not found' }),
-      }
-      ;(global.fetch as jest.Mock).mockResolvedValueOnce(errorResponse)
+      };
+      (global.fetch as jest.Mock).mockResolvedValueOnce(errorResponse);
 
-      await expect(apiCall('/nonexistent')).rejects.toThrow(ApiError)
-      await expect(apiCall('/nonexistent')).rejects.toThrow('Resource not found')
-    })
+      expect.assertions(2);
+      try {
+        await apiCall('/nonexistent');
+      } catch (e) {
+        expect(e).toBeInstanceOf(ApiError);
+        expect(e.message).toBe('Resource not found');
+      }
+    });
 
     it('should handle network errors', async () => {
-      ;(global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'))
+      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
 
-      await expect(apiCall('/test')).rejects.toThrow(ApiError)
-      await expect(apiCall('/test')).rejects.toThrow('네트워크 오류가 발생했습니다.')
-    })
+      expect.assertions(2);
+      try {
+        await apiCall('/test');
+      } catch (e) {
+        expect(e).toBeInstanceOf(ApiError);
+        expect(e.message).toBe('네트워크 오류가 발생했습니다.');
+      }
+    });
   })
 
   describe('authenticatedApiCall', () => {
