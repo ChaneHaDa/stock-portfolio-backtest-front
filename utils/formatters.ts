@@ -17,6 +17,9 @@ export const formatNumber = (value: number, decimals: number = 2): string => {
 export const formatDate = (dateString: string): string => {
   try {
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return dateString;
+    }
     return date.toLocaleDateString('ko-KR');
   } catch {
     return dateString;
