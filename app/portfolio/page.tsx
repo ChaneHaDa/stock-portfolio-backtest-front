@@ -6,12 +6,6 @@ import { authenticatedApiCall, ApiError } from "@/utils/api";
 import { Portfolio } from "@/types/portfolio";
 import { formatPercentage, formatCurrency } from "@/utils/formatters";
 
-interface ApiResponse {
-  status: string;
-  code: string | null;
-  message: string | null;
-  data: Portfolio[];
-}
 
 export default function MyPortfolio() {
   const { accessToken } = useAuth();
@@ -86,64 +80,70 @@ export default function MyPortfolio() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-lg">포트폴리오를 불러오는 중입니다...</p>
+      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-primary-50 to-white">
+        <div className="flex items-center space-x-3">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+          <p className="text-lg text-secondary-700">포트폴리오를 불러오는 중입니다...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-red-500">{error}</p>
+      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-primary-50 to-white">
+        <p className="text-red-500 bg-white p-4 rounded-lg shadow-md">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4 flex flex-col items-center">
-      <h1 className="text-2xl font-bold text-center mb-6">내 포트폴리오</h1>
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white py-8">
+      <div className="container mx-auto p-4 flex flex-col items-center">
+        <h1 className="text-3xl font-bold text-center mb-8 text-secondary-800">내 포트폴리오</h1>
       
-      {portfolios.length === 0 ? (
-        <p className="text-center">등록된 포트폴리오가 없습니다.</p>
-      ) : (
-        <div className="overflow-x-auto w-full max-w-[1200px]">
-          <table className="w-full bg-white border border-gray-200 rounded-lg shadow-md">
-            <thead className="bg-gray-50">
+        {portfolios.length === 0 ? (
+          <div className="bg-white p-8 rounded-xl shadow-lg border border-primary-100">
+            <p className="text-center text-secondary-600">등록된 포트폴리오가 없습니다.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto w-full max-w-[1200px]">
+            <table className="w-full bg-white border border-primary-200 rounded-lg shadow-lg">
+              <thead className="bg-primary-100">
               <tr>
-                <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">이름</th>
-                <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">설명</th>
-                <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">투자 금액</th>
-                <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">현재 가치</th>
-                <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">수익률</th>
-                <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">변동성</th>
-                <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">운용 기간</th>
-                <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">작업</th>
+                <th className="py-3 px-4 text-left text-xs font-medium text-secondary-700 uppercase tracking-wider">이름</th>
+                <th className="py-3 px-4 text-left text-xs font-medium text-secondary-700 uppercase tracking-wider">설명</th>
+                <th className="py-3 px-4 text-left text-xs font-medium text-secondary-700 uppercase tracking-wider">투자 금액</th>
+                <th className="py-3 px-4 text-left text-xs font-medium text-secondary-700 uppercase tracking-wider">현재 가치</th>
+                <th className="py-3 px-4 text-left text-xs font-medium text-secondary-700 uppercase tracking-wider">수익률</th>
+                <th className="py-3 px-4 text-left text-xs font-medium text-secondary-700 uppercase tracking-wider">변동성</th>
+                <th className="py-3 px-4 text-left text-xs font-medium text-secondary-700 uppercase tracking-wider">운용 기간</th>
+                <th className="py-3 px-4 text-left text-xs font-medium text-secondary-700 uppercase tracking-wider">작업</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-primary-200">
               {portfolios.map((portfolio) => (
-                <tr key={portfolio.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={portfolio.id} className="hover:bg-primary-50 transition-colors">
                   {/* 포트폴리오 이름을 Link로 감싸기 */}
                   <td className="py-4 px-4 whitespace-nowrap font-medium">
-                    <Link href={`/portfolio/${portfolio.id}`} className="text-blue-600 hover:underline">
+                    <Link href={`/portfolio/${portfolio.id}`} className="text-primary-600 hover:text-primary-800 hover:underline font-medium">
                       {portfolio.name}
                     </Link>
                   </td>
-                  <td className="py-4 px-4 whitespace-nowrap text-gray-600">{portfolio.description}</td>
+                  <td className="py-4 px-4 whitespace-nowrap text-secondary-600">{portfolio.description}</td>
                   <td className="py-4 px-4 whitespace-nowrap">{formatCurrency(portfolio.amount)}</td>
                   <td className="py-4 px-4 whitespace-nowrap">{formatCurrency(portfolio.price)}</td>
                   <td className={`py-4 px-4 whitespace-nowrap font-medium ${portfolio.ror >= 0 ? "text-green-600" : "text-red-600"}`}>
                     {formatPercentage(portfolio.ror)}
                   </td>
                   <td className="py-4 px-4 whitespace-nowrap">{portfolio.volatility.toFixed(2)}%</td>
-                  <td className="py-4 px-4 whitespace-nowrap text-gray-600">
+                  <td className="py-4 px-4 whitespace-nowrap text-secondary-600">
                     {portfolio.startDate} ~ {portfolio.endDate}
                   </td>
                   <td className="py-4 px-4 whitespace-nowrap">
                     <button
                       onClick={() => handleDelete(portfolio.id)}
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-xs"
+                      className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 rounded-lg text-xs transition-colors duration-200"
                     >
                       삭제
                     </button>
@@ -152,8 +152,9 @@ export default function MyPortfolio() {
               ))}
             </tbody>
           </table>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

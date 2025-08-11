@@ -215,12 +215,13 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto min-w-[400px] mt-10 p-8 bg-white rounded-xl shadow-md">
-      <h1 className="text-2xl font-bold mb-6 text-center text-indigo-700">회원가입</h1>
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white py-12">
+      <div className="max-w-md mx-auto min-w-[400px] p-8 bg-white rounded-xl shadow-xl border border-primary-100">
+        <h1 className="text-2xl font-bold mb-6 text-center text-secondary-800">회원가입</h1>
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* 아이디 필드 */}
         <div className="relative">
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="username" className="block text-sm font-medium text-secondary-700 mb-1">
             아이디
           </label>
           <div className="flex">
@@ -232,14 +233,14 @@ export default function RegisterPage() {
               onChange={handleChange}
               required
               disabled={isUsernameDisabled}
-              className={`w-full p-2.5 border ${isUsernameChecked ? 'border-green-500' : 'border-gray-300'} rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${isUsernameDisabled ? 'bg-gray-50 text-gray-500' : ''}`}
+              className={`w-full p-2.5 border ${isUsernameChecked ? 'border-green-500 bg-green-50' : 'border-primary-200 bg-primary-50'} rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-secondary-700 ${isUsernameDisabled ? 'bg-green-50 text-green-700' : ''}`}
               placeholder="예: userid123"
             />
             <button
               type="button"
               onClick={handleCheckUsername}
               disabled={isUsernameDisabled || !formData.username}
-              className={`px-3 py-2.5 rounded-r-lg text-white ${isUsernameChecked ? 'bg-green-500' : 'bg-indigo-600 hover:bg-indigo-700'} disabled:bg-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 text-sm whitespace-nowrap`}
+              className={`px-3 py-2.5 rounded-r-lg text-white ${isUsernameChecked ? 'bg-green-500' : 'bg-primary-600 hover:bg-primary-700'} disabled:bg-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 text-sm whitespace-nowrap`}
             >
               {isUsernameChecked ? '확인' : '확인'}
             </button>
@@ -254,7 +255,7 @@ export default function RegisterPage() {
 
         {/* 비밀번호 필드 */}
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="password" className="block text-sm font-medium text-secondary-700 mb-1">
             비밀번호
           </label>
           <input
@@ -264,14 +265,14 @@ export default function RegisterPage() {
             value={formData.password}
             onChange={handleChange}
             required
-            className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full p-2.5 border border-primary-200 bg-primary-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-secondary-700"
             placeholder="비밀번호를 입력하세요"
           />
         </div>
 
         {/* 이메일 필드 */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="email" className="block text-sm font-medium text-secondary-700 mb-1">
             이메일
           </label>
           <div className="flex">
@@ -284,7 +285,7 @@ export default function RegisterPage() {
               required
               placeholder="예: example@email.com"
               disabled={isEmailVerified || isEmailSent}
-              className={`w-full p-2.5 border ${isEmailVerified ? 'border-green-500' : 'border-gray-300'} rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${isEmailVerified || isEmailSent ? 'bg-gray-50 text-gray-500' : ''}`}
+              className={`w-full p-2.5 border ${isEmailVerified ? 'border-green-500 bg-green-50 text-green-700' : 'border-primary-200 bg-primary-50 text-secondary-700'} rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary-500 ${isEmailSent && !isEmailVerified ? 'bg-primary-100' : ''}`}
             />
             <button
               type="button"
@@ -382,6 +383,7 @@ export default function RegisterPage() {
           {responseMessage}
         </div>
       )}
+      </div>
     </div>
   );
 }

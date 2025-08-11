@@ -68,14 +68,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col w-full items-center flex-grow"> 
-      <div className="w-full min-w-[300px] max-w-[500px] p-8 space-y-6 bg-white rounded-xl shadow-lg">
-        <h1 className="text-3xl font-bold text-center text-gray-800">로그인</h1>
+    <div className="flex flex-col w-full items-center flex-grow bg-gradient-to-br from-primary-50 to-white min-h-screen py-12"> 
+      <div className="w-full min-w-[300px] max-w-[500px] p-8 space-y-6 bg-white rounded-xl shadow-xl border border-primary-100">
+        <h1 className="text-3xl font-bold text-center text-secondary-800">로그인</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label 
               htmlFor="id" 
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-secondary-700 mb-1"
             >
               사용자 ID
             </label>
@@ -86,14 +86,14 @@ export default function LoginPage() {
               value={credentials.id}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 mt-1 text-gray-700 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out"
+              className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-150 ease-in-out"
               placeholder="아이디를 입력하세요"
             />
           </div>
           <div>
             <label 
               htmlFor="password" 
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-secondary-700 mb-1"
             >
               비밀번호
             </label>
@@ -104,13 +104,13 @@ export default function LoginPage() {
               value={credentials.password}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 mt-1 text-gray-700 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out"
+              className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-150 ease-in-out"
               placeholder="비밀번호를 입력하세요"
             />
           </div>
           <button
             type="submit"
-            className="w-full py-3 px-4 font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out"
+            className="w-full py-3 px-4 font-semibold text-white bg-primary-600 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-150 ease-in-out"
           >
             로그인
           </button>

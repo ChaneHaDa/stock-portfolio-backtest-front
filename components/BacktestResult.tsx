@@ -98,14 +98,14 @@ const SaveUpdateModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 m-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 m-4 border border-primary-200">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-800">
+          <h2 className="text-xl font-bold text-secondary-800">
             {isUpdateMode ? "포트폴리오 수정 저장" : "백테스트 결과 저장"}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="text-secondary-500 hover:text-secondary-700 transition-colors"
             disabled={isLoading}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -116,7 +116,7 @@ const SaveUpdateModal = ({
         
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="name" className="block text-sm font-medium text-secondary-700 mb-1">
               이름 <span className="text-red-500">*</span>
             </label>
             <input
@@ -125,14 +125,14 @@ const SaveUpdateModal = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="백테스트 결과 이름"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-primary-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               required
               disabled={isLoading}
             />
           </div>
           
           <div className="mb-6">
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="description" className="block text-sm font-medium text-secondary-700 mb-1">
               설명
             </label>
             <textarea
@@ -140,7 +140,7 @@ const SaveUpdateModal = ({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="백테스트에 대한 간단한 설명 (선택사항)"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none"
+              className="w-full px-3 py-2 border border-primary-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 h-24 resize-none"
               disabled={isLoading}
             />
           </div>
@@ -149,7 +149,7 @@ const SaveUpdateModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
+              className="px-4 py-2 text-secondary-700 bg-secondary-200 rounded-md hover:bg-secondary-300 transition-colors"
               disabled={isLoading}
             >
               취소
@@ -157,7 +157,7 @@ const SaveUpdateModal = ({
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors flex items-center"
+              className="px-4 py-2 text-white bg-primary-600 rounded-md hover:bg-primary-700 transition-colors flex items-center"
             >
               {isLoading ? (
                 <>
@@ -360,18 +360,19 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
 
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* 헤더 섹션 */}
-      <div className="mb-8 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">
-          백테스트 결과 분석
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white py-8">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* 헤더 섹션 */}
+        <div className="mb-8 flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-secondary-900">
+            백테스트 결과 분석
+          </h1>
         <div className="flex items-center space-x-4">
           {/* 저장 또는 수정 버튼 */}
           {isAuthenticated && (
             <button
               onClick={handleOpenModal}
-              className={`${isUpdateMode ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-green-600 hover:bg-green-700'} text-white px-6 py-3 rounded-lg transition-colors flex items-center`}
+              className={`${isUpdateMode ? 'bg-orange-500 hover:bg-orange-600' : 'bg-primary-600 hover:bg-primary-700'} text-white px-6 py-3 rounded-lg transition-colors flex items-center shadow-md`}
               disabled={isProcessing} // 처리 중 비활성화
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -383,7 +384,7 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
           {/* 새 백테스트 실행 버튼 */}
           <Link
             href="/backtest"
-            className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors flex items-center"
+            className="bg-secondary-600 text-white px-6 py-3 rounded-lg hover:bg-secondary-700 transition-colors flex items-center shadow-md"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5m0 0l5-5m-5 5h12" />
@@ -393,39 +394,39 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
         </div>
       </div>
 
-      {/* 총 수익률 섹션 */}
-      <div className={`${sectionStyle} bg-gradient-to-r from-blue-50 to-indigo-50`}>
-        <h2 className={headingStyle}>포트폴리오 성능 요약</h2>
+        {/* 총 수익률 섹션 */}
+        <div className={`${sectionStyle} bg-gradient-to-r from-primary-50 to-primary-100 border border-primary-200`}>
+          <h2 className={headingStyle}>포트폴리오 성능 요약</h2>
         <div className="flex flex-col md:flex-row items-baseline gap-6">
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold text-blue-600">
+            <span className="text-4xl font-bold text-primary-600">
               {formatPercentage(result.totalRor)}
             </span>
-            <span className="text-gray-600">누적 수익률</span>
+            <span className="text-secondary-600">누적 수익률</span>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-bold text-green-600">
               {formatPercentage(highestMonthlyRor)}
             </span>
-            <span className="text-gray-600">최고 월 수익률</span>
+            <span className="text-secondary-600">최고 월 수익률</span>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-bold text-red-600">
               {formatPercentage(lowestMonthlyRor)}
             </span>
-            <span className="text-gray-600">최저 월 수익률</span>
+            <span className="text-secondary-600">최저 월 수익률</span>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-purple-600">
+            <span className="text-2xl font-bold text-secondary-700">
               {Number(result.totalAmount).toLocaleString("ko-KR")} 원
             </span>
-            <span className="text-gray-600">최종 자산</span>
+            <span className="text-secondary-600">최종 자산</span>
           </div>
         </div>
-      </div>
+        </div>
 
-      {/* 포트폴리오 구성 섹션 */}
-      <div className={sectionStyle}>
+        {/* 포트폴리오 구성 섹션 */}
+        <div className={`${sectionStyle} border border-primary-200`}>
         <h2 className={headingStyle}>포트폴리오 구성</h2>
         <div className="flex flex-col md:flex-row items-center">
           <div className="flex-1">
@@ -603,6 +604,7 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
         initialName={isUpdateMode ? updatedPortfolioData?.name : ""} // 수정 모드 시 초기값 전달
         initialDescription={isUpdateMode ? updatedPortfolioData?.description : ""} // 수정 모드 시 초기값 전달
       />
+      </div>
     </div>
   );
 };
