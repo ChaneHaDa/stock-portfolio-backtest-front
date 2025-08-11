@@ -133,22 +133,22 @@ const Home = () => {
             <p className="text-lg text-gray-600 mb-6">{marketTrend.description}</p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-          <div className="p-6 bg-gradient-to-br from-indigo-50 to-white rounded-xl shadow-sm border border-indigo-100 hover:shadow-md transition-shadow duration-300">
-            <h3 className="font-semibold text-lg mb-3 text-gray-700">S&P 500 (SPY)</h3>
+          <div className="p-6 bg-gradient-to-br from-indigo-50 to-white rounded-xl shadow-sm border border-indigo-100 hover:shadow-md transition-shadow duration-300 flex flex-col">
+            <h3 className="font-semibold text-lg mb-3 text-gray-700 h-14 flex items-center justify-center text-center">S&P 500<br />(SPY)</h3>
             <p className="text-2xl font-bold text-gray-800 mb-2">${marketTrend.indices.spy.price}</p>
             <p className={`text-lg font-medium ${parseFloat(marketTrend.indices.spy.change) >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
               {marketTrend.indices.spy.change}
             </p>
           </div>
-          <div className="p-6 bg-gradient-to-br from-indigo-50 to-white rounded-xl shadow-sm border border-indigo-100 hover:shadow-md transition-shadow duration-300">
-            <h3 className="font-semibold text-lg mb-3 text-gray-700">NASDAQ 100 (QQQ)</h3>
+          <div className="p-6 bg-gradient-to-br from-indigo-50 to-white rounded-xl shadow-sm border border-indigo-100 hover:shadow-md transition-shadow duration-300 flex flex-col">
+            <h3 className="font-semibold text-lg mb-3 text-gray-700 h-14 flex items-center justify-center text-center">NASDAQ 100<br />(QQQ)</h3>
             <p className="text-2xl font-bold text-gray-800 mb-2">${marketTrend.indices.qqq.price}</p>
             <p className={`text-lg font-medium ${parseFloat(marketTrend.indices.qqq.change) >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
               {marketTrend.indices.qqq.change}
             </p>
           </div>
-          <div className="p-6 bg-gradient-to-br from-indigo-50 to-white rounded-xl shadow-sm border border-indigo-100 hover:shadow-md transition-shadow duration-300">
-            <h3 className="font-semibold text-lg mb-3 text-gray-700">다우존스 (DIA)</h3>
+          <div className="p-6 bg-gradient-to-br from-indigo-50 to-white rounded-xl shadow-sm border border-indigo-100 hover:shadow-md transition-shadow duration-300 flex flex-col">
+            <h3 className="font-semibold text-lg mb-3 text-gray-700 h-14 flex items-center justify-center text-center">다우존스<br />(DIA)</h3>
             <p className="text-2xl font-bold text-gray-800 mb-2">${marketTrend.indices.dia.price}</p>
             <p className={`text-lg font-medium ${parseFloat(marketTrend.indices.dia.change) >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
               {marketTrend.indices.dia.change}
