@@ -1,11 +1,15 @@
-"use client"; // 클라이언트 컴포넌트로 변경
-import React, { useState, useEffect } from 'react'; // useState, useEffect 임포트
+"use client";
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/useAuth';
+import { MarketTrend, AlphaVantageGlobalQuote } from '@/types/market';
+import { INVESTMENT_TIPS } from '@/utils/constants';
+import { getAlphaVantageKey } from '@/utils/env';
 
 const Home = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated } = useAuth();
   const [investmentTip, setInvestmentTip] = useState('');
-  const [marketTrend, setMarketTrend] = useState({
+  const [marketTrend, setMarketTrend] = useState<MarketTrend>({
     trend: '로딩 중...',
     description: '',
     indices: {
@@ -14,11 +18,7 @@ const Home = () => {
       dia: { price: '로딩 중...', change: '0%' }
     }
   });
-
-  useEffect(() => {
-    // localStorage에서 토큰 확인
-    const token = localStorage.getItem("accessToken");
-    setIsAuthenticated(!!token);
+  const [isLoadingMarket, setIsLoadingMarket] = useState(true);
 
     // 투자 팁 설정
     const tips = [
@@ -30,33 +30,39 @@ const Home = () => {
     ];
     setInvestmentTip(tips[Math.floor(Math.random() * tips.length)]);
 
-    // Alpha Vantage API를 사용하여 시장 동향 가져오기
-    const API_KEY = process.env.NEXT_PUBLIC_ALPHA_VANTAGE_API_KEY;
-    
-    // 여러 지수의 데이터를 가져오는 함수
-    const fetchIndexData = async (symbol: string) => {
-      try {
-        const response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`);
-        const data = await response.json();
-        if (data['Global Quote']) {
-          return {
-            price: parseFloat(data['Global Quote']['05. price']).toFixed(2),
-            change: data['Global Quote']['10. change percent']
-          };
-        }
-        return null;
-      } catch (error) {
-        console.error(`Error fetching ${symbol} data:`, error);
-        return null;
-      }
-    };
+  const fetchIndexData = useCallback(async (symbol: string) => {
+    const API_KEY = getAlphaVantageKey();
+    if (!API_KEY) {
+      console.error('Alpha Vantage API key not found');
+      return null;
+    }
 
-    // 모든 지수 데이터 가져오기
-    Promise.all([
-      fetchIndexData('SPY'),
-      fetchIndexData('QQQ'),
-      fetchIndexData('DIA')
-    ]).then(([spyData, qqqData, diaData]) => {
+    try {
+      const response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`);
+      const data: AlphaVantageGlobalQuote = await response.json();
+      
+      if (data['Global Quote']) {
+        return {
+          price: parseFloat(data['Global Quote']['05. price']).toFixed(2),
+          change: data['Global Quote']['10. change percent']
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error(`Error fetching ${symbol} data:`, error);
+      return null;
+    }
+  }, []);
+
+  const fetchMarketData = useCallback(async () => {
+    try {
+      setIsLoadingMarket(true);
+      const [spyData, qqqData, diaData] = await Promise.all([
+        fetchIndexData('SPY'),
+        fetchIndexData('QQQ'),
+        fetchIndexData('DIA')
+      ]);
+
       if (spyData && qqqData && diaData) {
         const spyChange = parseFloat(spyData.change.replace('%', ''));
         let trend = '';
@@ -82,8 +88,11 @@ const Home = () => {
             dia: diaData
           }
         });
+      } else {
+        throw new Error('Market data unavailable');
       }
-    }).catch(() => {
+    } catch (error) {
+      console.error('Market data fetch error:', error);
       setMarketTrend({
         trend: '데이터를 가져오지 못했습니다',
         description: '잠시 후 다시 시도해주세요.',
@@ -93,8 +102,18 @@ const Home = () => {
           dia: { price: 'N/A', change: 'N/A' }
         }
       });
-    });
-  }, []);
+    } finally {
+      setIsLoadingMarket(false);
+    }
+  }, [fetchIndexData]);
+
+  useEffect(() => {
+    // 투자 팁 설정
+    setInvestmentTip(INVESTMENT_TIPS[Math.floor(Math.random() * INVESTMENT_TIPS.length)]);
+
+    // 시장 데이터 가져오기
+    fetchMarketData();
+  }, [fetchMarketData]);
 
   return (
     <div className="container mx-auto px-4 py-8 bg-gradient-to-b from-gray-50 to-white min-h-screen">
@@ -112,10 +131,17 @@ const Home = () => {
 
       <div className="bg-white bg-opacity-90 p-8 rounded-xl shadow-lg text-center mb-12 border border-gray-100">
         <h2 className="text-3xl font-bold text-gray-800 mb-4">현재 시장 동향</h2>
-        <p className="text-2xl font-semibold text-indigo-600 mb-2">{marketTrend.trend}</p>
-        <p className="text-lg text-gray-600 mb-6">{marketTrend.description}</p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+        {isLoadingMarket ? (
+          <div className="flex justify-center items-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <span className="ml-3 text-gray-600">시장 데이터를 불러오는 중...</span>
+          </div>
+        ) : (
+          <>
+            <p className="text-2xl font-semibold text-indigo-600 mb-2">{marketTrend.trend}</p>
+            <p className="text-lg text-gray-600 mb-6">{marketTrend.description}</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
           <div className="p-6 bg-gradient-to-br from-indigo-50 to-white rounded-xl shadow-sm border border-indigo-100 hover:shadow-md transition-shadow duration-300">
             <h3 className="font-semibold text-lg mb-3 text-gray-700">S&P 500 (SPY)</h3>
             <p className="text-2xl font-bold text-gray-800 mb-2">${marketTrend.indices.spy.price}</p>
@@ -137,7 +163,9 @@ const Home = () => {
               {marketTrend.indices.dia.change}
             </p>
           </div>
-        </div>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

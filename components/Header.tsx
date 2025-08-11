@@ -1,22 +1,15 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, logout } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    // localStorage에서 토큰이 있는지 확인하여 로그인 상태 결정
-    const token = localStorage.getItem("accessToken");
-    setIsAuthenticated(!!token);
-  }, []);
-
   const handleLogout = () => {
-    // 로그아웃: 토큰 제거 후 상태 업데이트 및 홈페이지로 리다이렉트
-    localStorage.removeItem("accessToken");
-    setIsAuthenticated(false);
+    logout();
     router.push("/");
   };
 

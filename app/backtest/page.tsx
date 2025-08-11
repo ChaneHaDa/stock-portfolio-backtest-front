@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config/apiConfig";
+import { DEFAULT_PORTFOLIO_ITEM, STORAGE_KEYS } from "@/utils/constants";
 
 // PortfolioItem 인터페이스에 stockId 추가 (선택되지 않은 경우 null)
 interface PortfolioItem {
@@ -154,7 +155,7 @@ const PortfolioForm = () => {
   const [endDate, setEndDate] = useState("2024-01");
   const [amount, setAmount] = useState("100000"); // 투자금액 상태 (문자열)
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([
-    { stockId: 1, stockName: "삼성전자", weight: "1" },
+    DEFAULT_PORTFOLIO_ITEM,
   ]);
   const router = useRouter();
 
@@ -191,7 +192,7 @@ const PortfolioForm = () => {
 
     if (response.ok) {
       const data = await response.json();
-      sessionStorage.setItem("backtestResult", JSON.stringify(data.data));
+      sessionStorage.setItem(STORAGE_KEYS.BACKTEST_RESULT, JSON.stringify(data.data));
       router.push("/backtest/result");
     } else {
       console.error("API 호출 오류:", response.statusText);
@@ -239,10 +240,22 @@ const PortfolioForm = () => {
     0
   );
 
-  // 가중치 유효성 검사 -> 합계가 100%인지 확인
-  const isWeightValid = Math.abs(totalWeight - 100) < 0.0001;
-  // 종목명 유효성 검사 -> 모든 항목에 종목명이 있는지 확인
-  const isStockNameValid = portfolioItems.every(item => item.stockName.trim() !== "");
+  const validation = useMemo(() => {
+    const isWeightValid = Math.abs(totalWeight - 100) < 0.0001;
+    const isStockNameValid = portfolioItems.every(item => item.stockName.trim() !== "");
+    const hasValidAmount = parseFloat(amount) > 0;
+    const hasValidDates = startDate && endDate && new Date(startDate) < new Date(endDate);
+    const hasUniqueStocks = new Set(portfolioItems.map(item => item.stockId)).size === portfolioItems.length;
+    
+    return {
+      isWeightValid,
+      isStockNameValid,
+      hasValidAmount,
+      hasValidDates,
+      hasUniqueStocks,
+      isFormValid: isWeightValid && isStockNameValid && hasValidAmount && hasValidDates && hasUniqueStocks
+    };
+  }, [totalWeight, portfolioItems, amount, startDate, endDate]);
 
   return (
     <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-[960px] mx-auto">
@@ -301,9 +314,9 @@ const PortfolioForm = () => {
         <div className="bg-gray-50 p-6 rounded-xl mb-8">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-gray-700">포트폴리오 구성</h2>
-            <div className={`text-sm font-medium ${isWeightValid ? "text-green-600" : "text-red-600"}`}>
+            <div className={`text-sm font-medium ${validation.isWeightValid ? "text-green-600" : "text-red-600"}`}>
               총 가중치: {totalWeight.toFixed(2)}%
-              {!isWeightValid && " (가중치 합계는 100%가 되어야 합니다)"}
+              {!validation.isWeightValid && " (가중치 합계는 100%가 되어야 합니다)"}
             </div>
           </div>
 
@@ -403,12 +416,26 @@ const PortfolioForm = () => {
           </div>
         </div>
 
+        {/* 검증 메시지 */}
+        {!validation.isFormValid && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <h3 className="font-medium text-red-800 mb-2">다음 항목들을 확인해주세요:</h3>
+            <ul className="text-sm text-red-700 space-y-1">
+              {!validation.isWeightValid && <li>• 가중치 합계가 100%가 되어야 합니다.</li>}
+              {!validation.isStockNameValid && <li>• 모든 종목을 선택해야 합니다.</li>}
+              {!validation.hasValidAmount && <li>• 투자 금액은 0보다 커야 합니다.</li>}
+              {!validation.hasValidDates && <li>• 시작 날짜는 종료 날짜보다 이전이어야 합니다.</li>}
+              {!validation.hasUniqueStocks && <li>• 중복된 종목이 있습니다.</li>}
+            </ul>
+          </div>
+        )}
+
         <div className="flex justify-center">
           <button
             type="submit"
-            disabled={!isWeightValid || !isStockNameValid} // 종목명 유효성 검사 추가
+            disabled={!validation.isFormValid}
             className={`flex items-center px-6 py-3 rounded-lg text-lg font-medium transition duration-200 ${
-              isWeightValid && isStockNameValid // 두 조건 모두 만족해야 활성화
+              validation.isFormValid
                 ? "bg-blue-600 text-white hover:bg-blue-700"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}

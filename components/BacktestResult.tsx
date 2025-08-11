@@ -13,9 +13,13 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // useRouter 추가
-import { API_BASE_URL } from "@/config/apiConfig";
+import { useEffect, useState, useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { authenticatedApiCall, ApiError } from "@/utils/api";
+import { formatPercentage, formatCurrency } from "@/utils/formatters";
+import { BacktestResult as BacktestResultType, ChartData, MonthlyData } from "@/types/portfolio";
+import { CHART_COLORS, STORAGE_KEYS } from "@/utils/constants";
 
 // 저장/수정 모달 Props
 interface SaveUpdateModalProps {
@@ -174,59 +178,52 @@ const SaveUpdateModal = ({
   );
 };
 
-const BacktestResult = ({ result }: { result: any }) => {
-  const router = useRouter(); // useRouter 훅 사용
-  // 데이터 가공 함수
-  const processMonthlyData = (rorObject: { [key: string]: number }) => {
+interface BacktestResultProps {
+  result: BacktestResultType;
+}
+
+const BacktestResult = ({ result }: BacktestResultProps) => {
+  const router = useRouter();
+  const { isAuthenticated, accessToken } = useAuth();
+
+  const processMonthlyData = useCallback((rorObject: Record<string, number>): MonthlyData[] => {
     return Object.entries(rorObject)
       .map(([date, value]) => ({
         date: date.slice(0, 7),
         return: Number(value),
       }))
       .sort((a, b) => a.date.localeCompare(b.date));
-  };
+  }, []);
 
-  const processPortfolioData = (portfolio: any[]) => {
+  const processPortfolioData = useCallback((portfolio: any[]): ChartData[] => {
     return portfolio.map((item) => ({
       name: item.stockName,
       value: item.weight * 100,
     }));
-  };
+  }, []);
 
-  const COLORS = [
-    "#0088FE",
-    "#00C49F",
-    "#FFBB28",
-    "#FF8042",
-    "#A28BFF",
-    "#FF6384",
-  ];
 
-  // 공통 스타일 클래스
   const sectionStyle = "bg-white rounded-lg shadow p-6 mb-6";
   const headingStyle = "text-2xl font-bold mb-4 text-gray-800";
 
-  // 포트폴리오 구성 데이터를 가공
-  const portfolioData = processPortfolioData(
-    result.portfolioInput.portfolioBacktestRequestItemDTOList
-  );
-  const totalPortfolioValue = portfolioData.reduce(
-    (acc, cur) => acc + cur.value,
-    0
+  const portfolioData = useMemo(() => 
+    processPortfolioData(result.portfolioInput.portfolioBacktestRequestItemDTOList),
+    [processPortfolioData, result.portfolioInput.portfolioBacktestRequestItemDTOList]
   );
 
-  // 달별 수익률 계산
-  const monthlyValues = Object.values(result.monthlyRor).map((value) =>
-    Number(value)
+  const totalPortfolioValue = useMemo(() => 
+    portfolioData.reduce((acc, cur) => acc + cur.value, 0),
+    [portfolioData]
   );
-  const highestMonthlyRor =
-    monthlyValues.length > 0 ? Math.max(...monthlyValues) : 0;
-  const lowestMonthlyRor =
-    monthlyValues.length > 0 ? Math.min(...monthlyValues) : 0;
 
-  // 로그인 상태
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [accessToken, setAccessToken] = useState("");
+  const { highestMonthlyRor, lowestMonthlyRor } = useMemo(() => {
+    const monthlyValues = Object.values(result.monthlyRor).map(Number);
+    return {
+      highestMonthlyRor: monthlyValues.length > 0 ? Math.max(...monthlyValues) : 0,
+      lowestMonthlyRor: monthlyValues.length > 0 ? Math.min(...monthlyValues) : 0,
+    };
+  }, [result.monthlyRor]);
+
 
   // 수정 모드 상태 (sessionStorage 확인)
   const [isUpdateMode, setIsUpdateMode] = useState(false);
@@ -246,7 +243,7 @@ const BacktestResult = ({ result }: { result: any }) => {
       }
 
       // 수정 모드 데이터 확인
-      const storedData = sessionStorage.getItem("updatedPortfolioData");
+      const storedData = sessionStorage.getItem(STORAGE_KEYS.UPDATED_PORTFOLIO_DATA);
       if (storedData) {
         try {
           const parsedData: UpdatedPortfolioData = JSON.parse(storedData);
@@ -254,7 +251,7 @@ const BacktestResult = ({ result }: { result: any }) => {
           setIsUpdateMode(true);
         } catch (e) {
           console.error("Failed to parse updatedPortfolioData from sessionStorage:", e);
-          sessionStorage.removeItem("updatedPortfolioData"); // 파싱 실패 시 제거
+          sessionStorage.removeItem(STORAGE_KEYS.UPDATED_PORTFOLIO_DATA); // 파싱 실패 시 제거
         }
       } else {
         setIsUpdateMode(false);
@@ -347,11 +344,11 @@ const BacktestResult = ({ result }: { result: any }) => {
 
       // 수정 모드 성공 시 sessionStorage 클리어 및 페이지 이동 (예: 포트폴리오 목록)
       if (isUpdateMode) {
-        sessionStorage.removeItem("updatedPortfolioData");
-        sessionStorage.removeItem("backtestResult"); // 백테스트 결과도 제거
+        sessionStorage.removeItem(STORAGE_KEYS.UPDATED_PORTFOLIO_DATA);
+        sessionStorage.removeItem(STORAGE_KEYS.BACKTEST_RESULT); // 백테스트 결과도 제거
         router.push(`/portfolio`); // 포트폴리오 목록 페이지로 이동 (또는 상세 페이지)
       } else {
-         sessionStorage.removeItem("backtestResult"); // 백테스트 결과 제거
+         sessionStorage.removeItem(STORAGE_KEYS.BACKTEST_RESULT); // 백테스트 결과 제거
          router.push('/portfolio'); // 저장 후 포트폴리오 목록 페이지로 이동
       }
 
@@ -452,7 +449,7 @@ const BacktestResult = ({ result }: { result: any }) => {
                   }
                 >
                   {portfolioData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                   ))}
                 </Pie>
                 <Legend />
@@ -616,10 +613,5 @@ const BacktestResult = ({ result }: { result: any }) => {
   );
 };
 
-// 퍼센트 포맷팅 유틸리티 함수
-const formatPercentage = (value: number) => {
-  const sign = value > 0 ? "+" : "";
-  return `${sign}${value.toFixed(2)}%`;
-};
 
 export default BacktestResult;
