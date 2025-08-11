@@ -20,15 +20,6 @@ const Home = () => {
   });
   const [isLoadingMarket, setIsLoadingMarket] = useState(true);
 
-    // 투자 팁 설정
-    const tips = [
-      "장기 투자는 단기 투자보다 안정적인 수익을 제공할 수 있습니다.",
-      "분산 투자는 포트폴리오의 리스크를 줄이는 좋은 방법입니다.",
-      "투자 전 반드시 기업의 재무제표를 분석하세요.",
-      "감정에 휘둘리지 말고 투자 전략을 꾸준히 유지하세요.",
-      "정기적인 포트폴리오 리밸런싱이 중요합니다."
-    ];
-    setInvestmentTip(tips[Math.floor(Math.random() * tips.length)]);
 
   const fetchIndexData = useCallback(async (symbol: string) => {
     const API_KEY = getAlphaVantageKey();

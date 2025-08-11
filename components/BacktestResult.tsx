@@ -235,12 +235,6 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // 로그인 토큰 확인
-      const token = localStorage.getItem("accessToken");
-      setIsAuthenticated(!!token);
-      if (token) {
-        setAccessToken(token);
-      }
 
       // 수정 모드 데이터 확인
       const storedData = sessionStorage.getItem(STORAGE_KEYS.UPDATED_PORTFOLIO_DATA);

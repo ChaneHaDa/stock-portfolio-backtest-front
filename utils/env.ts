@@ -20,5 +20,6 @@ export const validateApiConfig = (): void => {
 };
 
 export const getAlphaVantageKey = (): string | null => {
-  return getOptionalEnvVar('NEXT_PUBLIC_ALPHA_VANTAGE_API_KEY') || null;
+  const key = process.env.NEXT_PUBLIC_ALPHA_VANTAGE_API_KEY;
+  return key && key.trim() ? key.trim() : null;
 };
