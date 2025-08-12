@@ -479,20 +479,22 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
       {/* 수익률 차트 섹션 */}
       <div className={sectionStyle}>
         <h2 className={headingStyle}>월별 수익률 추이</h2>
-        <div className="h-96 overflow-x-auto">
+        <div className="h-[500px] overflow-x-auto">
           <ResponsiveContainer width="150%" height="100%">
             <LineChart
               data={processMonthlyData(result.monthlyRor)}
-              margin={{ top: 20, right: 40, left: 20, bottom: 40 }}
+              margin={{ top: 20, right: 40, left: 20, bottom: 80 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="date"
-                tick={{ fill: "#6b7280" }}
-                interval={2}
+                tick={{ fill: "#6b7280", fontSize: 12 }}
+                interval={1}
                 angle={-45}
-                dy={15}
+                dy={10}
+                dx={-5}
                 textAnchor="end"
+                height={60}
               />
               <YAxis
                 tickFormatter={(value) => `${value}%`}
