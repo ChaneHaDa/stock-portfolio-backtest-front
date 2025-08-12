@@ -97,26 +97,33 @@ const SaveUpdateModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 m-4 border border-primary-200">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-secondary-800">
-            {isUpdateMode ? "포트폴리오 수정 저장" : "백테스트 결과 저장"}
-          </h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/75 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 m-4 border border-slate-200">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-lg ${isUpdateMode ? 'bg-amber-100' : 'bg-blue-100'}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isUpdateMode ? 'text-amber-600' : 'text-blue-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold text-slate-800">
+              {isUpdateMode ? "포트폴리오 수정 저장" : "백테스트 결과 저장"}
+            </h2>
+          </div>
           <button
             onClick={onClose}
-            className="text-secondary-500 hover:text-secondary-700 transition-colors"
+            className="text-slate-400 hover:text-slate-600 transition-colors p-2 hover:bg-slate-100 rounded-lg"
             disabled={isLoading}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
         
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-medium text-secondary-700 mb-1">
+          <div className="mb-6">
+            <label htmlFor="name" className="block text-sm font-semibold text-slate-700 mb-2">
               이름 <span className="text-red-500">*</span>
             </label>
             <input
@@ -124,23 +131,23 @@ const SaveUpdateModal = ({
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="백테스트 결과 이름"
-              className="w-full px-3 py-2 border border-primary-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              placeholder="백테스트 결과 이름을 입력하세요"
+              className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               required
               disabled={isLoading}
             />
           </div>
           
-          <div className="mb-6">
-            <label htmlFor="description" className="block text-sm font-medium text-secondary-700 mb-1">
+          <div className="mb-8">
+            <label htmlFor="description" className="block text-sm font-semibold text-slate-700 mb-2">
               설명
             </label>
             <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="백테스트에 대한 간단한 설명 (선택사항)"
-              className="w-full px-3 py-2 border border-primary-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 h-24 resize-none"
+              placeholder="백테스트에 대한 간단한 설명을 작성해보세요 (선택사항)"
+              className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent h-24 resize-none transition-all"
               disabled={isLoading}
             />
           </div>
@@ -149,7 +156,7 @@ const SaveUpdateModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-secondary-700 bg-secondary-200 rounded-md hover:bg-secondary-300 transition-colors"
+              className="px-6 py-3 text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-all duration-200 font-medium"
               disabled={isLoading}
             >
               취소
@@ -157,7 +164,11 @@ const SaveUpdateModal = ({
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 text-white bg-primary-600 rounded-md hover:bg-primary-700 transition-colors flex items-center"
+              className={`px-6 py-3 text-white rounded-xl transition-all duration-200 flex items-center font-medium shadow-lg hover:shadow-xl transform hover:scale-105 ${
+                isUpdateMode 
+                  ? 'bg-amber-500 hover:bg-amber-600' 
+                  : 'bg-blue-600 hover:bg-blue-700'
+              }`}
             >
               {isLoading ? (
                 <>
@@ -168,7 +179,12 @@ const SaveUpdateModal = ({
                   저장 중...
                 </>
               ) : (
-                isUpdateMode ? "수정 저장" : "저장하기"
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  {isUpdateMode ? "수정 저장" : "저장하기"}
+                </>
               )}
             </button>
           </div>
@@ -360,201 +376,296 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white py-8">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* 헤더 섹션 */}
-        <div className="mb-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-secondary-900">
-            백테스트 결과 분석
-          </h1>
-        <div className="flex items-center space-x-4">
-          {/* 저장 또는 수정 버튼 */}
-          {isAuthenticated && (
-            <button
-              onClick={handleOpenModal}
-              className={`${isUpdateMode ? 'bg-orange-500 hover:bg-orange-600' : 'bg-primary-600 hover:bg-primary-700'} text-white px-6 py-3 rounded-lg transition-colors flex items-center shadow-md`}
-              disabled={isProcessing} // 처리 중 비활성화
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-              </svg>
-              {isUpdateMode ? "수정 저장하기" : "저장하기"}
-            </button>
-          )}
-          {/* 새 백테스트 실행 버튼 */}
-          <Link
-            href="/backtest"
-            className="bg-secondary-600 text-white px-6 py-3 rounded-lg hover:bg-secondary-700 transition-colors flex items-center shadow-md"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5m0 0l5-5m-5 5h12" />
-            </svg>
-            새 백테스트 실행
-          </Link>
-        </div>
-      </div>
-
-        {/* 총 수익률 섹션 */}
-        <div className={`${sectionStyle} bg-gradient-to-r from-primary-50 to-primary-100 border border-primary-200`}>
-          <h2 className={headingStyle}>포트폴리오 성능 요약</h2>
-        <div className="flex flex-col md:flex-row items-baseline gap-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold text-primary-600">
-              {formatPercentage(result.totalRor)}
-            </span>
-            <span className="text-secondary-600">누적 수익률</span>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-green-600">
-              {formatPercentage(highestMonthlyRor)}
-            </span>
-            <span className="text-secondary-600">최고 월 수익률</span>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-red-600">
-              {formatPercentage(lowestMonthlyRor)}
-            </span>
-            <span className="text-secondary-600">최저 월 수익률</span>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-secondary-700">
-              {Number(result.totalAmount).toLocaleString("ko-KR")} 원
-            </span>
-            <span className="text-secondary-600">최종 자산</span>
-          </div>
-        </div>
-        </div>
-
-        {/* 포트폴리오 구성 섹션 */}
-        <div className={`${sectionStyle} border border-primary-200`}>
-        <h2 className={headingStyle}>포트폴리오 구성</h2>
-        <div className="flex flex-col md:flex-row items-center">
-          <div className="flex-1">
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={portfolioData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}%`
-                  }
+        <div className="mb-8">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div>
+              <h1 className="text-4xl font-bold text-slate-900 mb-2">
+                백테스트 결과 분석
+              </h1>
+              <p className="text-slate-600">
+                포트폴리오 성과를 종합적으로 분석하고 투자 전략을 평가해보세요
+              </p>
+            </div>
+            <div className="flex items-center space-x-3">
+              {isAuthenticated && (
+                <button
+                  onClick={handleOpenModal}
+                  className={`${
+                    isUpdateMode 
+                      ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200' 
+                      : 'bg-blue-600 hover:bg-blue-700 shadow-blue-200'
+                  } text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center shadow-lg hover:shadow-xl transform hover:scale-105`}
+                  disabled={isProcessing}
                 >
-                  {portfolioData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                  </svg>
+                  {isUpdateMode ? "수정 저장" : "저장하기"}
+                </button>
+              )}
+              <Link
+                href="/backtest"
+                className="bg-slate-700 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition-all duration-200 flex items-center shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                새 백테스트
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* 주요 성과 지표 카드 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 hover:shadow-xl transition-shadow duration-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-blue-100 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <p className="text-slate-600 text-sm font-medium">누적 수익률</p>
+              <p className={`text-3xl font-bold ${result.totalRor >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                {formatPercentage(result.totalRor)}
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 hover:shadow-xl transition-shadow duration-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-emerald-100 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                </svg>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <p className="text-slate-600 text-sm font-medium">최고 월 수익률</p>
+              <p className="text-3xl font-bold text-emerald-600">
+                {formatPercentage(highestMonthlyRor)}
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 hover:shadow-xl transition-shadow duration-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-red-100 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                </svg>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <p className="text-slate-600 text-sm font-medium">최저 월 수익률</p>
+              <p className="text-3xl font-bold text-red-500">
+                {formatPercentage(lowestMonthlyRor)}
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 hover:shadow-xl transition-shadow duration-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-amber-100 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <p className="text-slate-600 text-sm font-medium">최종 자산</p>
+              <p className="text-3xl font-bold text-slate-700">
+                {Number(result.totalAmount).toLocaleString("ko-KR")}
+              </p>
+              <p className="text-xs text-slate-500">원</p>
+            </div>
+          </div>
+        </div>
+
+        {/* 메인 콘텐츠 그리드 */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          {/* 포트폴리오 구성 차트 */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 h-full">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-slate-800">포트폴리오 구성</h3>
+              </div>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={portfolioData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={85}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ name, percent }) =>
+                        `${name} ${(percent * 100).toFixed(0)}%`
+                      }
+                    >
+                      {portfolioData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+
+          {/* 포트폴리오 구성 테이블 */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 h-full">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-slate-800">종목별 비중</h3>
+              </div>
+              <div className="overflow-hidden">
+                <div className="space-y-4">
+                  {portfolioData.map((item, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div 
+                          className="w-4 h-4 rounded-full"
+                          style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}
+                        ></div>
+                        <div>
+                          <h4 className="font-semibold text-slate-800">{item.name}</h4>
+                          <p className="text-sm text-slate-500">종목 {index + 1}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-slate-700">{item.value.toFixed(1)}%</p>
+                        <p className="text-sm text-slate-500">비중</p>
+                      </div>
+                    </div>
                   ))}
-                </Pie>
-                <Legend />
-              </PieChart>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 수익률 차트 섹션 */}
+        <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 mb-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-slate-800">월별 수익률 추이</h3>
+          </div>
+          <div className="h-[500px] overflow-x-auto">
+            <ResponsiveContainer width="150%" height="100%">
+              <LineChart
+                data={processMonthlyData(result.monthlyRor)}
+                margin={{ top: 20, right: 40, left: 20, bottom: 80 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fill: "#64748b", fontSize: 12 }}
+                  interval={1}
+                  angle={-45}
+                  dy={10}
+                  dx={-5}
+                  textAnchor="end"
+                  height={60}
+                />
+                <YAxis
+                  tickFormatter={(value) => `${value}%`}
+                  width={80}
+                  tick={{ fill: "#64748b" }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "12px",
+                    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                  }}
+                  formatter={(value: number) => [
+                    <span key="value" className="text-blue-600 font-semibold">
+                      {value.toFixed(2)}%
+                    </span>,
+                    "수익률",
+                  ]}
+                  labelFormatter={(label) => (
+                    <span className="text-slate-600 font-medium">{label}</span>
+                  )}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="return"
+                  stroke="#3b82f6"
+                  strokeWidth={3}
+                  dot={{ fill: "#3b82f6", strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, fill: "#1d4ed8" }}
+                />
+              </LineChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex-1 pl-4 mt-6 md:mt-0">
-            <table className="w-full text-sm text-left border border-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="border px-4 py-2">종목명</th>
-                  <th className="border px-4 py-2">값</th>
-                  <th className="border px-4 py-2">비율</th>
-                </tr>
-              </thead>
-              <tbody>
-                {portfolioData.map((item, index) => (
-                  <tr key={index} className="divide-x divide-gray-200">
-                    <td className="border px-4 py-2">{item.name}</td>
-                    <td className="border px-4 py-2">{item.value}</td>
-                    <td className="border px-4 py-2">
-                      {((item.value / totalPortfolioValue) * 100).toFixed(0)}%
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </div>
-      </div>
 
-      {/* 수익률 차트 섹션 */}
-      <div className={sectionStyle}>
-        <h2 className={headingStyle}>월별 수익률 추이</h2>
-        <div className="h-[500px] overflow-x-auto">
-          <ResponsiveContainer width="150%" height="100%">
-            <LineChart
-              data={processMonthlyData(result.monthlyRor)}
-              margin={{ top: 20, right: 40, left: 20, bottom: 80 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis
-                dataKey="date"
-                tick={{ fill: "#6b7280", fontSize: 12 }}
-                interval={1}
-                angle={-45}
-                dy={10}
-                dx={-5}
-                textAnchor="end"
-                height={60}
-              />
-              <YAxis
-                tickFormatter={(value) => `${value}%`}
-                width={80}
-                tick={{ fill: "#6b7280" }}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#fff",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: "8px",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                }}
-                formatter={(value: number) => [
-                  <span key="value" className="text-blue-600 font-semibold">
-                    {value.toFixed(2)}%
-                  </span>,
-                  "수익률",
-                ]}
-                labelFormatter={(label) => (
-                  <span className="text-gray-600">{label}</span>
-                )}
-              />
-              <Line
-                type="monotone"
-                dataKey="return"
-                stroke="#4f46e5"
-                strokeWidth={2}
-                dot={{ fill: "#4f46e5", strokeWidth: 2 }}
-                activeDot={{ r: 6 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* 상세 성과 테이블 섹션 */}
-      <div className={sectionStyle}>
-        <h2 className={headingStyle}>상세 성과 분석</h2>
-        <div className="grid gap-6 md:grid-cols-2">
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-gray-700">포트폴리오 월별 성과</h3>
-            <div className="max-h-96 overflow-y-auto rounded-lg border border-gray-200">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-gray-50 sticky top-0">
+        {/* 상세 성과 분석 섹션 */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+          {/* 월별 성과 테이블 */}
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-indigo-100 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m0 0V9a2 2 0 00-2 2H10a2 2 0 00-2-2V7m0 0H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2h-4" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-slate-800">월별 수익률 상세</h3>
+            </div>
+            <div className="max-h-96 overflow-y-auto rounded-xl border border-slate-200">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-50 sticky top-0">
                   <tr>
-                    <th className="px-4 py-3 font-medium text-gray-500">월</th>
-                    <th className="px-4 py-3 font-medium text-gray-500 text-right">수익률</th>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-700">기간</th>
+                    <th className="px-4 py-3 text-right font-semibold text-slate-700">수익률</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-slate-100">
                   {processMonthlyData(result.monthlyRor).map(({ date, return: ror }) => (
-                    <tr key={date}>
-                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{date}</td>
-                      <td
-                        className={`px-4 py-3 text-right whitespace-nowrap ${
-                          ror >= 0 ? "text-green-600" : "text-red-600"
-                        }`}
-                      >
-                        {formatPercentage(ror)}
+                    <tr key={date} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-4 py-3 text-slate-600 font-medium">{date}</td>
+                      <td className={`px-4 py-3 text-right font-bold ${
+                        ror >= 0 
+                          ? "text-emerald-600" 
+                          : "text-red-500"
+                      }`}>
+                        <div className="flex items-center justify-end gap-2">
+                          {ror >= 0 ? (
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                            </svg>
+                          ) : (
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          {formatPercentage(ror)}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -563,38 +674,55 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
             </div>
           </div>
 
-          <div>
-            <h3 className="text-lg font-semibold mb-4 text-gray-700">개별 종목 성과</h3>
-            <div className="space-y-4">
-              {result.portfolioBacktestResponseItemDTOList.map((stock: any) => (
-                <div key={stock.name} className="p-4 bg-gray-50 rounded-lg">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium text-gray-700">{stock.name}</span>
-                    <span
-                      className={`text-sm ${
-                        stock.totalRor >= 0 ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {formatPercentage(stock.totalRor)}
-                    </span>
+          {/* 개별 종목 성과 */}
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-slate-800">개별 종목 분석</h3>
+            </div>
+            <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+              {result.portfolioBacktestResponseItemDTOList.map((stock: any, index: number) => (
+                <div key={stock.name} className="p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:shadow-md transition-all duration-200">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}
+                      ></div>
+                      <h4 className="font-bold text-slate-800">{stock.name}</h4>
+                    </div>
+                    <div className="text-right">
+                      <div className={`text-lg font-bold ${
+                        stock.totalRor >= 0 ? "text-emerald-600" : "text-red-500"
+                      }`}>
+                        {formatPercentage(stock.totalRor)}
+                      </div>
+                      <div className="text-xs text-slate-500">총 수익률</div>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600">
-                    최대 수익률:{" "}
-                    {formatPercentage(
-                      Math.max(...Object.values<number>(stock.monthlyRor))
-                    )}
-                    <br />
-                    최대 손실:{" "}
-                    {formatPercentage(
-                      Math.min(...Object.values<number>(stock.monthlyRor))
-                    )}
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="bg-white p-2 rounded-lg">
+                      <div className="text-emerald-600 font-semibold">
+                        {formatPercentage(Math.max(...Object.values<number>(stock.monthlyRor)))}
+                      </div>
+                      <div className="text-slate-500 text-xs">최대 수익률</div>
+                    </div>
+                    <div className="bg-white p-2 rounded-lg">
+                      <div className="text-red-500 font-semibold">
+                        {formatPercentage(Math.min(...Object.values<number>(stock.monthlyRor)))}
+                      </div>
+                      <div className="text-slate-500 text-xs">최대 손실</div>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
-      </div>
 
       {/* 저장/수정 모달 */}
       <SaveUpdateModal
