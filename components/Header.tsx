@@ -61,11 +61,11 @@ const Header = () => {
             </nav>
           </div>
 
-          <div className="hidden md:flex items-center space-x-3">
+          <div className="hidden md:flex items-center space-x-1">
             {isAuthenticated ? (
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+                className="px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-red-600/20 hover:border-red-500/50 text-sm font-medium transition-all duration-200 border border-transparent"
               >
                 로그아웃
               </button>
@@ -73,13 +73,21 @@ const Header = () => {
               <>
                 <Link
                   href="/login"
-                  className="px-4 py-2 rounded-lg border border-slate-600 text-slate-300 hover:text-white hover:bg-slate-700/50 text-sm font-medium transition-all duration-200"
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    isActiveRoute("/login")
+                      ? "bg-slate-700 text-white shadow-md"
+                      : "text-slate-300 hover:text-white hover:bg-slate-700/50"
+                  }`}
                 >
                   로그인
                 </Link>
                 <Link
                   href="/register"
-                  className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    isActiveRoute("/register")
+                      ? "bg-slate-700 text-white shadow-md"
+                      : "text-slate-300 hover:text-white hover:bg-slate-700/50"
+                  }`}
                 >
                   회원가입
                 </Link>
@@ -124,31 +132,39 @@ const Header = () => {
                 );
               })}
               
-              <div className="border-t border-slate-700 pt-4 mt-4">
+              <div className="border-t border-slate-700 pt-4 mt-4 space-y-2">
                 {isAuthenticated ? (
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-3 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-all duration-200"
+                    className="w-full px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-red-600/20 text-sm font-medium transition-all duration-200 text-left"
                   >
                     로그아웃
                   </button>
                 ) : (
-                  <div className="space-y-2">
+                  <>
                     <Link
                       href="/login"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-4 py-3 rounded-lg border border-slate-600 text-slate-300 hover:text-white hover:bg-slate-700/50 text-sm font-medium transition-all duration-200 text-center"
+                      className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        isActiveRoute("/login")
+                          ? "bg-slate-700 text-white"
+                          : "text-slate-300 hover:text-white hover:bg-slate-700/50"
+                      }`}
                     >
                       로그인
                     </Link>
                     <Link
                       href="/register"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-4 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-all duration-200 text-center"
+                      className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        isActiveRoute("/register")
+                          ? "bg-slate-700 text-white"
+                          : "text-slate-300 hover:text-white hover:bg-slate-700/50"
+                      }`}
                     >
                       회원가입
                     </Link>
-                  </div>
+                  </>
                 )}
               </div>
             </nav>
