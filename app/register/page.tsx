@@ -233,7 +233,7 @@ export default function RegisterPage() {
               onChange={handleChange}
               required
               disabled={isUsernameDisabled}
-              className={`w-full px-4 py-2 border ${isUsernameChecked ? 'border-green-500 bg-green-50' : 'border-primary-200 bg-primary-50'} rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-150 ease-in-out text-secondary-700 ${isUsernameDisabled ? 'bg-green-50 text-green-700' : ''}`}
+              className={`w-full px-4 py-2 border ${isUsernameChecked ? 'border-green-500 bg-green-50' : 'border-primary-200 bg-primary-50 focus:border-primary-500'} rounded-l-md focus:outline-none transition duration-150 ease-in-out text-secondary-700 ${isUsernameDisabled ? 'bg-green-50 text-green-700' : ''}`}
               placeholder="예: userid123"
             />
             <button
@@ -265,7 +265,7 @@ export default function RegisterPage() {
             value={formData.password}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-150 ease-in-out"
+            className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:border-primary-500 transition duration-150 ease-in-out"
             placeholder="비밀번호를 입력하세요"
           />
         </div>
@@ -285,7 +285,7 @@ export default function RegisterPage() {
               required
               placeholder="예: example@email.com"
               disabled={isEmailVerified || isEmailSent}
-              className={`w-full px-4 py-2 mt-1 border ${isEmailVerified ? 'border-green-500 bg-green-50 text-green-700' : 'border-primary-200 bg-primary-50 text-secondary-700'} rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-150 ease-in-out ${isEmailSent && !isEmailVerified ? 'bg-primary-100' : ''}`}
+              className={`w-full px-4 py-2 mt-1 border ${isEmailVerified ? 'border-green-500 bg-green-50 text-green-700' : 'border-primary-200 bg-primary-50 text-secondary-700 focus:border-primary-500'} rounded-l-md focus:outline-none transition duration-150 ease-in-out ${isEmailSent && !isEmailVerified ? 'bg-primary-100' : ''}`}
             />
             <button
               type="button"
@@ -317,7 +317,7 @@ export default function RegisterPage() {
                   onChange={(e) => setEmailVerificationCode(e.target.value)}
                   required
                   disabled={isEmailVerified || isVerifyingEmail}
-                  className={`w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-150 ease-in-out ${isEmailVerified ? 'bg-gray-50 text-gray-500' : ''}`}
+                  className={`w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-l-md focus:outline-none focus:border-primary-500 transition duration-150 ease-in-out ${isEmailVerified ? 'bg-gray-50 text-gray-500' : ''}`}
                   placeholder="인증 코드 입력"
                 />
                 <button
@@ -345,7 +345,7 @@ export default function RegisterPage() {
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-150 ease-in-out"
+            className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:border-primary-500 transition duration-150 ease-in-out"
             placeholder="예: 홍길동"
           />
         </div>
@@ -362,7 +362,7 @@ export default function RegisterPage() {
             value={formData.phoneNumber}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-150 ease-in-out"
+            className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:border-primary-500 transition duration-150 ease-in-out"
             placeholder="예: 010-1234-5678"
           />
         </div>
