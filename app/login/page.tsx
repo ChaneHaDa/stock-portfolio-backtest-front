@@ -86,7 +86,7 @@ export default function LoginPage() {
               value={credentials.id}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-150 ease-in-out"
+              className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:border-primary-500 transition duration-150 ease-in-out"
               placeholder="아이디를 입력하세요"
             />
           </div>
@@ -104,7 +104,7 @@ export default function LoginPage() {
               value={credentials.password}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-150 ease-in-out"
+              className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:border-primary-500 transition duration-150 ease-in-out"
               placeholder="비밀번호를 입력하세요"
             />
           </div>
