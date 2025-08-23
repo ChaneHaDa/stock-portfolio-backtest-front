@@ -188,7 +188,7 @@ const BacktestResult = ({ result }: { result: any }) => {
 
   const processPortfolioData = (portfolio: any[]) => {
     return portfolio.map((item) => ({
-      name: item.stockName,
+      name: item.stockName || item.customStockName || "알 수 없음",
       value: item.weight * 100,
     }));
   };
@@ -303,12 +303,20 @@ const BacktestResult = ({ result }: { result: any }) => {
         // --- 저장 모드 (POST 요청) ---
         method = 'POST';
         apiUrl = `${API_BASE_URL}/portfolios`;
-        const portfolioItemRequestDTOList = (result.portfolioInput.portfolioBacktestRequestItemDTOList as PortfolioItem[]).map(item => ({
-          stockId: item.stockId,
-          // stockName은 POST 요청 시 필요 없을 수 있음 (API 명세 확인 필요)
-          // stockName: item.stockName,
-          weight: item.weight
-        }));
+        const portfolioItemRequestDTOList = result.portfolioInput.portfolioBacktestRequestItemDTOList.map((item: any) => {
+          // 사용자 정의 종목인지 확인
+          if (item.customStockName && item.annualReturnRate !== undefined) {
+            return {
+              stockId: null,
+              weight: item.weight
+            };
+          } else {
+            return {
+              stockId: item.stockId,
+              weight: item.weight
+            };
+          }
+        });
         requestBody = {
           name: modalData.name,
           description: modalData.description,
@@ -572,10 +580,10 @@ const BacktestResult = ({ result }: { result: any }) => {
           <div>
             <h3 className="text-lg font-semibold mb-4 text-gray-700">개별 종목 성과</h3>
             <div className="space-y-4">
-              {result.portfolioBacktestResponseItemDTOList.map((stock: any) => (
-                <div key={stock.name} className="p-4 bg-gray-50 rounded-lg">
+              {result.portfolioBacktestResponseItemDTOList.map((stock: any, index: number) => (
+                <div key={stock.name || stock.customStockName || index} className="p-4 bg-gray-50 rounded-lg">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium text-gray-700">{stock.name}</span>
+                    <span className="font-medium text-gray-700">{stock.name || stock.customStockName || "알 수 없음"}</span>
                     <span
                       className={`text-sm ${
                         stock.totalRor >= 0 ? "text-green-600" : "text-red-600"
