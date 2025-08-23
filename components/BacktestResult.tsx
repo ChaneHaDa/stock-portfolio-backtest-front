@@ -489,8 +489,8 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
               <p className="text-slate-600 text-sm font-medium">최종 자산</p>
               <p className="text-3xl font-bold text-slate-700">
                 {Number(result.totalAmount).toLocaleString("ko-KR")}
+                <span className="text-lg text-slate-500 ml-1">원</span>
               </p>
-              <p className="text-xs text-slate-500">원</p>
             </div>
           </div>
         </div>
