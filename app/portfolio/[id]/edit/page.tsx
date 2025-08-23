@@ -10,6 +10,9 @@ interface PortfolioItem {
   stockId: number | null;
   stockName: string;
   weight: string; // UI에서는 % 단위 문자열 사용
+  isCustom?: boolean; // 사용자 정의 종목 여부
+  customStockName?: string; // 사용자 정의 종목 이름
+  annualReturnRate?: string; // 연평균 수익률 (%)
 }
 
 // 주식 검색 API의 반환값에 맞춘 Stock 인터페이스
@@ -20,17 +23,22 @@ interface Stock {
   marketCategory: string;
 }
 
-// 주식 검색 팝업 컴포넌트 (backtest/page.tsx와 동일)
+// 주식 검색 팝업 컴포넌트 (사용자 정의 종목 추가 기능 포함)
 interface StockSearchModalProps {
-  onSelect: (stock: Stock) => void;
+  onSelect: (stock: Stock | { isCustom: true; customStockName: string; annualReturnRate: string }) => void;
   onClose: () => void;
 }
 
 const StockSearchModal: React.FC<StockSearchModalProps> = ({ onSelect, onClose }) => {
+  const [activeTab, setActiveTab] = useState<'search' | 'custom'>('search');
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Stock[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  
+  // 사용자 정의 종목 상태
+  const [customName, setCustomName] = useState("");
+  const [customReturn, setCustomReturn] = useState("");
 
   const handleSearch = async () => {
     setLoading(true);
@@ -53,58 +61,198 @@ const StockSearchModal: React.FC<StockSearchModalProps> = ({ onSelect, onClose }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && activeTab === 'search') {
       handleSearch();
     }
   };
 
+  const handleCustomSubmit = () => {
+    if (!customName.trim()) {
+      alert("종목명을 입력해주세요.");
+      return;
+    }
+    if (!customReturn.trim()) {
+      alert("연평균 수익률을 입력해주세요.");
+      return;
+    }
+    
+    onSelect({
+      isCustom: true,
+      customStockName: customName,
+      annualReturnRate: customReturn
+    });
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-      <div className="bg-white p-6 rounded-xl w-[450px] shadow-2xl">
+      <div className="bg-white p-6 rounded-xl w-[500px] shadow-2xl">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">주식 검색</h2>
+          <h2 className="text-2xl font-bold text-gray-800">종목 선택</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 transition-colors p-2"
           >
-            {/* Close Icon SVG */}
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
-        <div className="flex mb-4">
-          <input
-            type="text"
-            placeholder="종목명 또는 코드 입력"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="border border-gray-300 rounded-l-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+        
+        {/* 탭 버튼 */}
+        <div className="flex mb-4 border-b border-gray-200">
           <button
-            onClick={handleSearch}
-            className="bg-blue-600 text-white px-4 py-3 rounded-r-lg hover:bg-blue-700 transition duration-200 flex items-center"
+            onClick={() => setActiveTab('search')}
+            className={`flex-1 pb-2 px-4 text-sm font-medium transition-colors ${
+              activeTab === 'search' 
+                ? 'text-blue-600 border-b-2 border-blue-600' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
           >
-            {/* Search Icon SVG */}
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <div className="flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              기존 종목 검색
+            </div>
+          </button>
+          <button
+            onClick={() => setActiveTab('custom')}
+            className={`flex-1 pb-2 px-4 text-sm font-medium transition-colors ${
+              activeTab === 'custom' 
+                ? 'text-blue-600 border-b-2 border-blue-600' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <div className="flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              사용자 정의 종목
+            </div>
           </button>
         </div>
-        {/* Loading, Error, Results */}
-        {loading && <div className="flex justify-center items-center py-4"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div></div>}
-        {error && <p className="text-red-500 mb-4 p-2 bg-red-50 rounded-lg">{error}</p>}
-        <div className="max-h-[300px] overflow-y-auto">
-          {results.length > 0 ? (
-            <ul className="divide-y divide-gray-200">
-              {results.map((stock) => (
-                <li key={stock.stockId} className="p-3 hover:bg-blue-50 cursor-pointer transition duration-150 rounded-md" onClick={() => { onSelect(stock); onClose(); }}>
-                  <div className="font-medium text-gray-800">{stock.name}</div>
-                  <div className="text-sm text-gray-500">{stock.shortCode} - {stock.marketCategory}</div>
-                </li>
-              ))}
-            </ul>
-          ) : query && !loading && !error ? (
-            <p className="text-center py-4 text-gray-500">검색 결과가 없습니다</p>
-          ) : null}
-        </div>
+
+        {/* 탭 내용 */}
+        {activeTab === 'search' ? (
+          <>
+            <div className="flex mb-4">
+              <input
+                type="text"
+                placeholder="종목명 또는 코드 입력"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="border border-gray-300 rounded-l-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <button
+                onClick={handleSearch}
+                className="bg-blue-600 text-white px-4 py-3 rounded-r-lg hover:bg-blue-700 transition duration-200 flex items-center"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            </div>
+
+            {loading && (
+              <div className="flex justify-center items-center py-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              </div>
+            )}
+
+            {error && (
+              <p className="text-red-500 mb-4 p-2 bg-red-50 rounded-lg">{error}</p>
+            )}
+
+            <div className="max-h-[300px] overflow-y-auto">
+              {results.length > 0 ? (
+                <ul className="divide-y divide-gray-200">
+                  {results.map((stock) => (
+                    <li
+                      key={stock.stockId}
+                      className="p-3 hover:bg-blue-50 cursor-pointer transition duration-150 rounded-md"
+                      onClick={() => {
+                        onSelect(stock);
+                        onClose();
+                      }}
+                    >
+                      <div className="font-medium text-gray-800">{stock.name}</div>
+                      <div className="text-sm text-gray-500">
+                        {stock.shortCode} - {stock.marketCategory}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : query && !loading && !error ? (
+                <p className="text-center py-4 text-gray-500">검색 결과가 없습니다</p>
+              ) : (
+                <div className="text-center py-8 text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <p>종목을 검색해주세요</p>
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <div className="space-y-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-sm text-blue-800">
+                <strong>💡 Tip:</strong> DB에 없는 자산(부동산, 채권, 금 등)을 포트폴리오에 추가할 수 있습니다.
+              </p>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                종목명 <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="예: 부동산 REIT, 금, 채권"
+                value={customName}
+                onChange={(e) => setCustomName(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                연평균 수익률 (%) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                placeholder="예: 7.5"
+                value={customReturn}
+                onChange={(e) => setCustomReturn(e.target.value)}
+                step="0.1"
+                min="-100"
+                max="1000"
+                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="text-xs text-gray-500 mt-1">-100% ~ 1000% 범위 내에서 입력</p>
+            </div>
+            
+            <div className="flex justify-end gap-3 pt-4">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleCustomSubmit}
+                className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                추가
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -191,7 +339,8 @@ const PortfolioEditForm = () => {
           setPortfolioItems(data.items.map(item => ({
             stockId: item.stockId,
             stockName: item.name,
-            weight: (item.weight * 100).toString()
+            weight: (item.weight * 100).toString(),
+            isCustom: false
           })));
         } else {
           throw new Error(responseData.message || "데이터 로드 실패");
@@ -220,8 +369,8 @@ const PortfolioEditForm = () => {
       setIsSubmitting(false);
       return;
     }
-    if (portfolioItems.some(item => !item.stockId || !item.stockName)) {
-      setError("모든 포트폴리오 항목에 유효한 주식이 선택되어야 합니다.");
+    if (!isStockNameValid) {
+      setError("모든 포트폴리오 항목이 올바르게 입력되어야 합니다.");
       setIsSubmitting(false);
       return;
     }
@@ -234,11 +383,24 @@ const PortfolioEditForm = () => {
       startDate: formattedStartDate,
       endDate: formattedEndDate,
       amount: Number(amount),
-      portfolioBacktestRequestItemDTOList: portfolioItems.map((item) => ({
-        stockId: item.stockId,
-        stockName: item.stockName,
-        weight: parseFloat(item.weight || "0") / 100, // UI(%) -> API(0~1)
-      })),
+      portfolioBacktestRequestItemDTOList: portfolioItems.map((item) => {
+        if (item.isCustom) {
+          // 사용자 정의 종목인 경우
+          return {
+            stockId: null,
+            customStockName: item.customStockName,
+            annualReturnRate: parseFloat(item.annualReturnRate || "0"),
+            weight: parseFloat(item.weight || "0") / 100,
+          };
+        } else {
+          // 기존 DB 종목인 경우
+          return {
+            stockId: item.stockId,
+            stockName: item.stockName,
+            weight: parseFloat(item.weight || "0") / 100,
+          };
+        }
+      }),
     };
 
     // 수정된 포트폴리오 정보 (결과 페이지에서 PUT 요청 시 사용)
@@ -295,7 +457,7 @@ const PortfolioEditForm = () => {
 
   // 포트폴리오 항목 추가 핸들러
   const addPortfolioItem = () => {
-    setPortfolioItems([...portfolioItems, { stockId: null, stockName: "", weight: "0" }]);
+    setPortfolioItems([...portfolioItems, { stockId: null, stockName: "", weight: "0", isCustom: false }]);
   };
 
   // 포트폴리오 항목 삭제 핸들러
@@ -311,11 +473,34 @@ const PortfolioEditForm = () => {
   };
 
   // 주식 선택 핸들러
-  const handleStockSelect = (stock: Stock) => {
+  const handleStockSelect = (stock: Stock | { isCustom: true; customStockName: string; annualReturnRate: string }) => {
     if (currentSearchIndex !== null) {
       const newItems = [...portfolioItems];
-      newItems[currentSearchIndex].stockName = stock.name;
-      newItems[currentSearchIndex].stockId = stock.stockId;
+      
+      if ('isCustom' in stock && stock.isCustom) {
+        // 사용자 정의 종목
+        newItems[currentSearchIndex] = {
+          ...newItems[currentSearchIndex],
+          isCustom: true,
+          stockId: null,
+          stockName: "",
+          customStockName: stock.customStockName,
+          annualReturnRate: stock.annualReturnRate,
+          weight: newItems[currentSearchIndex].weight
+        };
+      } else {
+        // 기존 종목
+        newItems[currentSearchIndex] = {
+          ...newItems[currentSearchIndex],
+          isCustom: false,
+          stockName: stock.name,
+          stockId: stock.stockId,
+          customStockName: "",
+          annualReturnRate: "",
+          weight: newItems[currentSearchIndex].weight
+        };
+      }
+      
       setPortfolioItems(newItems);
     }
     setIsSearchModalOpen(false);
@@ -325,7 +510,16 @@ const PortfolioEditForm = () => {
   // 총 가중치 계산 (UI 표시용)
   const totalWeight = portfolioItems.reduce((sum, item) => sum + parseFloat(item.weight || "0"), 0);
   const isWeightValid = Math.abs(totalWeight - 100) < 0.01;
-  const isStockNameValid = portfolioItems.every(item => item.stockName.trim() !== "" && item.stockId !== null);
+  const isStockNameValid = portfolioItems.every(item => {
+    if (item.isCustom) {
+      // 사용자 정의 종목은 이름과 수익률이 모두 입력되어야 함
+      return item.customStockName && item.customStockName.trim() !== "" && 
+             item.annualReturnRate && item.annualReturnRate.trim() !== "";
+    } else {
+      // 기존 종목은 종목명과 stockId가 있어야 함
+      return item.stockName && item.stockName.trim() !== "" && item.stockId !== null;
+    }
+  });
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen"><p className="text-lg">포트폴리오 정보를 불러오는 중...</p></div>;
@@ -439,28 +633,46 @@ const PortfolioEditForm = () => {
                 key={index}
                 className="grid grid-cols-12 gap-4 items-center py-3 px-2 border-b border-gray-100 hover:bg-blue-50 transition-colors duration-150 rounded-md"
               >
-                <div className="col-span-1 text-gray-600 font-medium">{index + 1}</div>
-                {/* 종목명 (검색 버튼 포함) */}
+                <div className="col-span-1 text-gray-600 font-medium">
+                  {index + 1}
+                </div>
+                
                 <div className="col-span-6">
-                  <div className="flex items-center">
-                    <input
-                      type="text"
-                      required
-                      value={item.stockName}
-                      readOnly
-                      placeholder="종목을 검색하세요"
-                      className={`border border-gray-300 rounded-lg p-2 w-full focus:outline-none ${item.stockName ? 'bg-gray-100' : 'bg-yellow-100'}`}
-                    />
+                  <div className="flex items-center gap-2">
+                    {item.isCustom ? (
+                      <div className="flex items-center gap-2 flex-1">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          사용자 정의
+                        </span>
+                        <span className="font-medium text-gray-800">{item.customStockName}</span>
+                        <span className="text-sm text-gray-500">({item.annualReturnRate}% 연)</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 flex-1">
+                        {item.stockName ? (
+                          <>
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              상장 종목
+                            </span>
+                            <span className="font-medium text-gray-800">{item.stockName}</span>
+                          </>
+                        ) : (
+                          <span className="text-gray-400">종목을 선택해주세요</span>
+                        )}
+                      </div>
+                    )}
                     <button
                       type="button"
                       onClick={() => handleOpenSearchModal(index)}
-                      className="ml-2 bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition duration-200 flex-shrink-0"
+                      className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition duration-200"
                     >
-                      {/* Search Icon SVG */}
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
                     </button>
                   </div>
                 </div>
+                
                 {/* 비중 입력 */}
                 <div className="col-span-3">
                   <div className="relative">
@@ -483,8 +695,9 @@ const PortfolioEditForm = () => {
                     disabled={portfolioItems.length <= 1}
                     className={`p-2 rounded-full ${portfolioItems.length <= 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-red-100 text-red-600 hover:bg-red-200 transition duration-200"}`}
                   >
-                    {/* Delete Icon SVG */}
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
                   </button>
                 </div>
               </div>

@@ -213,7 +213,7 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
 
   const processPortfolioData = useCallback((portfolio: any[]): ChartData[] => {
     return portfolio.map((item) => ({
-      name: item.stockName,
+      name: item.stockName || item.customStockName || "알 수 없음",
       value: item.weight * 100,
     }));
   }, []);
@@ -310,12 +310,20 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
         // --- 저장 모드 (POST 요청) ---
         method = 'POST';
         apiUrl = `${API_BASE_URL}/portfolios`;
-        const portfolioItemRequestDTOList = (result.portfolioInput.portfolioBacktestRequestItemDTOList as PortfolioItem[]).map(item => ({
-          stockId: item.stockId,
-          // stockName은 POST 요청 시 필요 없을 수 있음 (API 명세 확인 필요)
-          // stockName: item.stockName,
-          weight: item.weight
-        }));
+        const portfolioItemRequestDTOList = result.portfolioInput.portfolioBacktestRequestItemDTOList.map((item: any) => {
+          // 사용자 정의 종목인지 확인
+          if (item.customStockName && item.annualReturnRate !== undefined) {
+            return {
+              stockId: null,
+              weight: item.weight
+            };
+          } else {
+            return {
+              stockId: item.stockId,
+              weight: item.weight
+            };
+          }
+        });
         requestBody = {
           name: modalData.name,
           description: modalData.description,
@@ -686,14 +694,14 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
             </div>
             <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
               {result.portfolioBacktestResponseItemDTOList.map((stock: any, index: number) => (
-                <div key={stock.name} className="p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:shadow-md transition-all duration-200">
+                <div key={stock.name || stock.customStockName || index} className="p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:shadow-md transition-all duration-200">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center gap-3">
                       <div 
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}
                       ></div>
-                      <h4 className="font-bold text-slate-800">{stock.name}</h4>
+                      <h4 className="font-bold text-slate-800">{stock.name || stock.customStockName || "알 수 없음"}</h4>
                     </div>
                     <div className="text-right">
                       <div className={`text-lg font-bold ${
