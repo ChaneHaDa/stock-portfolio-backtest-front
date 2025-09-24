@@ -194,9 +194,8 @@ export default function RegisterPage() {
       });
 
       if (response.status === 201) {
-        const data = await response.json();
         setIsSuccess(true);
-        setResponseMessage(`회원가입 성공! ID: ${data.data.id}, Username: ${data.data.username}`);
+        setResponseMessage('회원가입이 완료되었습니다!');
         setTimeout(() => {
           router.push('/login');
         }, 1500); // 1.5초 후 로그인 페이지로 이동
