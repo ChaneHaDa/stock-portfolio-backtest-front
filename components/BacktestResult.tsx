@@ -279,6 +279,21 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false); // 저장/수정 진행 중 상태
 
+  // 토스트 알림 상태
+  const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({
+    show: false,
+    message: '',
+    type: 'success'
+  });
+
+  // 토스트 표시 함수
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast({ show: false, message: '', type: 'success' });
+    }, 3000);
+  };
+
   useEffect(() => {
     if (typeof window !== "undefined") {
 
@@ -387,7 +402,7 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
       const responseData = await response.json();
       console.log(`${isUpdateMode ? '수정' : '저장'} 성공:`, responseData);
 
-      alert(`포트폴리오가 성공적으로 ${isUpdateMode ? '수정' : '저장'}되었습니다.`);
+      showToast(`포트폴리오가 성공적으로 ${isUpdateMode ? '수정' : '저장'}되었습니다.`, 'success');
       setIsModalOpen(false);
 
       // 수정 모드 성공 시 sessionStorage 클리어 및 페이지 이동 (예: 포트폴리오 목록)
@@ -405,7 +420,7 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
     } catch (error: unknown) {
       console.error(`${isUpdateMode ? '수정' : '저장'} 오류:`, error);
       const message = error instanceof Error ? error.message : "알 수 없는 오류";
-      alert(`${isUpdateMode ? '수정' : '저장'} 중 오류가 발생했습니다: ${message}`);
+      showToast(`${isUpdateMode ? '수정' : '저장'} 중 오류가 발생했습니다: ${message}`, 'error');
       return Promise.reject(error);
     } finally {
       setIsProcessing(false);
@@ -772,6 +787,65 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
         initialName={isUpdateMode ? updatedPortfolioData?.name : ""} // 수정 모드 시 초기값 전달
         initialDescription={isUpdateMode ? updatedPortfolioData?.description : ""} // 수정 모드 시 초기값 전달
       />
+
+      {/* 토스트 알림 */}
+      {toast.show && (
+        <div className="fixed bottom-8 right-8 z-50 animate-slide-up">
+          <div className={`
+            flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border-2 backdrop-blur-md
+            ${toast.type === 'success'
+              ? 'bg-gradient-to-r from-green-500/90 to-emerald-500/90 border-green-400/50 text-white'
+              : 'bg-gradient-to-r from-red-500/90 to-rose-500/90 border-red-400/50 text-white'
+            }
+          `}>
+            {/* 아이콘 */}
+            <div className={`
+              p-2 rounded-full
+              ${toast.type === 'success' ? 'bg-white/20' : 'bg-white/20'}
+            `}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {toast.type === 'success' ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                )}
+              </svg>
+            </div>
+
+            {/* 메시지 */}
+            <div className="flex-1">
+              <p className="font-semibold text-sm">{toast.type === 'success' ? '성공' : '오류'}</p>
+              <p className="text-sm opacity-95">{toast.message}</p>
+            </div>
+
+            {/* 닫기 버튼 */}
+            <button
+              onClick={() => setToast({ show: false, message: '', type: 'success' })}
+              className="p-1 hover:bg-white/20 rounded-lg transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes slide-up {
+          from {
+            transform: translateY(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        .animate-slide-up {
+          animation: slide-up 0.3s ease-out;
+        }
+      `}</style>
       </div>
     </div>
   );
