@@ -140,7 +140,7 @@ const StockDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8 min-h-screen flex justify-center items-center">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white py-8 flex justify-center items-center">
         <div className="flex items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
           <span className="ml-3 text-lg text-secondary-600">로딩 중...</span>
@@ -151,19 +151,22 @@ const StockDetailPage = () => {
 
   if (!stock) {
     return (
-      <div className="container mx-auto px-4 py-8 min-h-screen">
-        <div className="text-center">
-          <p className="text-lg text-secondary-600">주식 정보를 찾을 수 없습니다.</p>
-          <Link href="/stocks" className="text-primary-600 hover:text-primary-700 mt-4 inline-block">
-            검색 페이지로 돌아가기
-          </Link>
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white py-8">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="text-center">
+            <p className="text-lg text-secondary-600">주식 정보를 찾을 수 없습니다.</p>
+            <Link href="/stocks" className="text-primary-600 hover:text-primary-700 mt-4 inline-block">
+              검색 페이지로 돌아가기
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 bg-gradient-to-b from-primary-50 to-white min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white py-8">
+      <div className="container mx-auto px-4 max-w-7xl">
       {/* 뒤로가기 버튼 */}
       <div className="mb-6">
         <Link
@@ -335,6 +338,7 @@ const StockDetailPage = () => {
             </LineChart>
           </ResponsiveContainer>
         )}
+      </div>
       </div>
     </div>
   );

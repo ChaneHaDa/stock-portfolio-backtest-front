@@ -107,7 +107,8 @@ const Home = () => {
   }, [fetchMarketData]);
 
   return (
-    <div className="container mx-auto px-4 py-8 bg-gradient-to-b from-primary-50 to-white min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white py-8">
+      <div className="container mx-auto px-4 max-w-7xl">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-secondary-800 mb-4">나만의 투자 포트폴리오 관리</h1>
         <p className="text-lg text-secondary-600">
@@ -193,6 +194,7 @@ const Home = () => {
             </Link>
           </>
         )}
+      </div>
       </div>
     </div>
   );
