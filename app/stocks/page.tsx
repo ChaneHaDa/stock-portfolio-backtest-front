@@ -22,10 +22,18 @@ const StocksPage = () => {
     try {
       setIsSearching(true);
       const response = await fetch(`${API_BASE_URL}/stocks?q=${encodeURIComponent(searchQuery)}`);
+
+      // 404는 검색 결과 없음으로 처리
+      if (response.status === 404) {
+        setSearchResults([]);
+        setHasSearched(true);
+        return;
+      }
+
       const result: ApiResponse<StockSearchResult[]> = await response.json();
 
       if (result.status === 'success') {
-        setSearchResults(result.data);
+        setSearchResults(result.data || []);
         setHasSearched(true);
       } else {
         alert('검색 중 오류가 발생했습니다.');
