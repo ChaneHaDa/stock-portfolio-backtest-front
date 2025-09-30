@@ -25,8 +25,8 @@ const Header = () => {
   const navItems = [
     { href: "/", label: "홈", showWhenAuth: "both" },
     { href: "/portfolio", label: "내 포트폴리오", showWhenAuth: "auth" },
-    { href: "/backtest", label: "백테스트", showWhenAuth: "both" },
     { href: "/stocks", label: "주식 정보", showWhenAuth: "both" },
+    { href: "/backtest", label: "백테스트", showWhenAuth: "both" },
   ];
 
   return (
