@@ -88,10 +88,10 @@ const StockSearchModal: React.FC<StockSearchModalProps> = ({ onSelect, onClose }
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
       <div className="bg-white p-6 rounded-xl w-[500px] shadow-2xl">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">종목 선택</h2>
+          <h2 className="text-2xl font-bold text-secondary-800">종목 선택</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors p-2"
+            className="text-secondary-500 hover:text-secondary-700 transition-colors p-2"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -532,224 +532,233 @@ const PortfolioEditForm = () => {
 
 
   return (
-    <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-[960px] mx-auto my-8">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">
-        포트폴리오 수정 및 백테스트
-      </h1>
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white py-8">
+      <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-[960px] mx-auto border border-primary-200">
+        <h1 className="text-3xl font-bold text-secondary-800 mb-6 pb-2 border-b-2 border-primary-300">
+          포트폴리오 수정 및 백테스트
+        </h1>
 
-      <form className="w-full" onSubmit={handleSubmit}>
-        {/* 기본 정보 수정 섹션 */}
-        <div className="bg-gray-50 p-6 rounded-xl mb-8">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">기본 정보 수정</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-             <div>
-               <label htmlFor="portfolioName" className="block text-gray-700 font-medium mb-2">
-                 포트폴리오 이름
-               </label>
-               <input
-                 type="text"
-                 id="portfolioName"
-                 required
-                 value={portfolioName}
-                 onChange={(e) => setPortfolioName(e.target.value)}
-                 className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-               />
-             </div>
-             <div>
-               <label htmlFor="description" className="block text-gray-700 font-medium mb-2">
-                 설명
-               </label>
-               <textarea
-                 id="description"
-                 value={description}
-                 onChange={(e) => setDescription(e.target.value)}
-                 className="border border-gray-300 rounded-lg p-3 w-full h-24 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-               />
-             </div>
-            <div>
-              <label htmlFor="startDate" className="block text-gray-700 font-medium mb-2">
-                시작 날짜 (백테스트 기간)
-              </label>
-              <input
-                type="month"
-                id="startDate"
-                required
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-              />
-            </div>
-            <div>
-              <label htmlFor="endDate" className="block text-gray-700 font-medium mb-2">
-                종료 날짜 (백테스트 기간)
-              </label>
-              <input
-                type="month"
-                id="endDate"
-                required
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-              />
-            </div>
-            <div>
-              <label htmlFor="amount" className="block text-gray-700 font-medium mb-2">
-                초기 투자금액 (원)
-              </label>
-              <input
-                type="number"
-                id="amount"
-                required
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-              />
-            </div>
-          </div>
-        </div>
+        <form className="w-full" onSubmit={handleSubmit}>
+          {/* 기본 정보 수정 섹션 */}
+          <div className="bg-primary-50 p-6 rounded-xl mb-8">
+            <h2 className="text-xl font-semibold text-secondary-700 mb-4">기본 정보 수정</h2>
 
-        {/* 포트폴리오 구성 수정 섹션 */}
-        <div className="bg-gray-50 p-6 rounded-xl mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-700">포트폴리오 구성 수정</h2>
-            <div className={`text-sm font-medium ${isWeightValid ? "text-green-600" : "text-red-600"}`}>
-              총 가중치: {totalWeight.toFixed(2)}%
-              {!isWeightValid && " (합계 100% 필요)"}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="portfolioName" className="block text-secondary-700 font-medium mb-2">
+                  포트폴리오 이름
+                </label>
+                <input
+                  type="text"
+                  id="portfolioName"
+                  required
+                  value={portfolioName}
+                  onChange={(e) => setPortfolioName(e.target.value)}
+                  className="border border-primary-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 bg-white"
+                />
+              </div>
+              <div>
+                <label htmlFor="description" className="block text-secondary-700 font-medium mb-2">
+                  설명
+                </label>
+                <textarea
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="border border-primary-300 rounded-lg p-3 w-full h-[52px] focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 bg-white resize-none"
+                />
+              </div>
+              <div>
+                <label htmlFor="startDate" className="block text-secondary-700 font-medium mb-2">
+                  시작 날짜
+                </label>
+                <input
+                  type="month"
+                  id="startDate"
+                  required
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="border border-primary-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 bg-white"
+                />
+              </div>
+              <div>
+                <label htmlFor="endDate" className="block text-secondary-700 font-medium mb-2">
+                  종료 날짜
+                </label>
+                <input
+                  type="month"
+                  id="endDate"
+                  required
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="border border-primary-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 bg-white"
+                />
+              </div>
+              <div>
+                <label htmlFor="amount" className="block text-secondary-700 font-medium mb-2">
+                  초기 투자금액 (원)
+                </label>
+                <input
+                  type="number"
+                  id="amount"
+                  required
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="border border-primary-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 bg-white"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="mb-4 bg-white rounded-lg p-4 shadow-sm">
-            {/* 테이블 헤더 */}
-            <div className="grid grid-cols-12 gap-4 mb-2 text-gray-600 font-medium px-2">
-              <div className="col-span-1">번호</div>
-              <div className="col-span-6">종목명</div>
-              <div className="col-span-3 text-center">비중 (%)</div>
-              <div className="col-span-2 text-center">관리</div>
+          {/* 포트폴리오 구성 수정 섹션 */}
+          <div className="bg-primary-50 p-6 rounded-xl mb-8">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-secondary-700">포트폴리오 구성 수정</h2>
+              <div className={`text-sm font-medium ${isWeightValid ? "text-green-600" : "text-red-600"}`}>
+                총 가중치: {totalWeight.toFixed(2)}%
+                {!isWeightValid && " (합계 100% 필요)"}
+              </div>
             </div>
 
-            {/* 테이블 바디 */}
-            {portfolioItems.map((item, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-12 gap-4 items-center py-3 px-2 border-b border-gray-100 hover:bg-blue-50 transition-colors duration-150 rounded-md"
-              >
-                <div className="col-span-1 text-gray-600 font-medium">
-                  {index + 1}
-                </div>
-                
-                <div className="col-span-6">
-                  <div className="flex items-center gap-2">
-                    {item.isCustom ? (
-                      <div className="flex items-center gap-2 flex-1">
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                          사용자 정의
-                        </span>
-                        <span className="font-medium text-gray-800">{item.customStockName}</span>
-                        <span className="text-sm text-gray-500">({item.annualReturnRate}% 연)</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 flex-1">
-                        {item.stockName ? (
-                          <>
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                              상장 종목
-                            </span>
-                            <span className="font-medium text-gray-800">{item.stockName}</span>
-                          </>
-                        ) : (
-                          <span className="text-gray-400">종목을 선택해주세요</span>
-                        )}
-                      </div>
-                    )}
+            <div className="mb-4 bg-white rounded-lg p-4 shadow-sm">
+              {/* 테이블 헤더 */}
+              <div className="grid grid-cols-12 gap-4 mb-2 text-secondary-600 font-medium px-2">
+                <div className="col-span-1">번호</div>
+                <div className="col-span-6">종목명</div>
+                <div className="col-span-3 text-center">비중 (%)</div>
+                <div className="col-span-2 text-center">관리</div>
+              </div>
+
+              {portfolioItems.map((item, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-12 gap-4 items-center py-3 px-2 border-b border-primary-100 hover:bg-primary-100 transition-colors duration-150 rounded-md"
+                >
+                  <div className="col-span-1 text-secondary-600 font-medium">
+                    {index + 1}
+                  </div>
+
+                  <div className="col-span-6">
+                    <div className="flex items-center gap-2">
+                      {item.isCustom ? (
+                        <div className="flex items-center gap-2 flex-1">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            사용자 정의
+                          </span>
+                          <span className="font-medium text-gray-800">{item.customStockName}</span>
+                          <span className="text-sm text-gray-500">({item.annualReturnRate}% 연)</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 flex-1">
+                          {item.stockName ? (
+                            <>
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                상장 종목
+                              </span>
+                              <span className="font-medium text-gray-800">{item.stockName}</span>
+                            </>
+                          ) : (
+                            <span className="text-gray-400">종목을 선택해주세요</span>
+                          )}
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleOpenSearchModal(index)}
+                        className="bg-primary-600 text-white p-2 rounded-lg hover:bg-primary-700 transition duration-200"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 비중 입력 */}
+                  <div className="col-span-3">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        required
+                        value={item.weight}
+                        onChange={(e) => handleItemWeightChange(index, e.target.value)}
+                        className="border border-primary-300 rounded-lg p-2 w-full text-center focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      />
+                      <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">%</span>
+                    </div>
+                  </div>
+
+                  {/* 삭제 버튼 */}
+                  <div className="col-span-2 flex justify-center">
                     <button
                       type="button"
-                      onClick={() => handleOpenSearchModal(index)}
-                      className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition duration-200"
+                      onClick={() => removePortfolioItem(index)}
+                      disabled={portfolioItems.length <= 1}
+                      className={`p-2 rounded-full ${portfolioItems.length <= 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-red-100 text-red-600 hover:bg-red-200 transition duration-200"}`}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
                     </button>
                   </div>
                 </div>
-                
-                {/* 비중 입력 */}
-                <div className="col-span-3">
-                  <div className="relative">
-                    <input
-                      type="text" // text 타입으로 변경하여 소수점 입력 용이하게
-                      inputMode="decimal" // 모바일 숫자 키패드 (소수점 포함)
-                      required
-                      value={item.weight}
-                      onChange={(e) => handleItemWeightChange(index, e.target.value)}
-                      className="border border-gray-300 rounded-lg p-2 w-full text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">%</span>
-                  </div>
-                </div>
-                {/* 삭제 버튼 */}
-                <div className="col-span-2 flex justify-center">
-                  <button
-                    type="button"
-                    onClick={() => removePortfolioItem(index)}
-                    disabled={portfolioItems.length <= 1}
-                    className={`p-2 rounded-full ${portfolioItems.length <= 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-red-100 text-red-600 hover:bg-red-200 transition duration-200"}`}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* 자산 추가 버튼 */}
+            <div className="flex justify-center mt-6">
+              <button
+                type="button"
+                onClick={addPortfolioItem}
+                className="flex items-center bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition duration-200"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                자산 추가
+              </button>
+            </div>
           </div>
 
-          {/* 자산 추가 버튼 */}
-          <div className="flex justify-center mt-6">
+          {/* 백테스트 실행 버튼 */}
+          <div className="flex justify-center">
             <button
-              type="button"
-              onClick={addPortfolioItem}
-              className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+              type="submit"
+              disabled={!isWeightValid || !isStockNameValid || isSubmitting}
+              className={`flex items-center px-6 py-3 rounded-lg text-lg font-medium transition duration-200 ${isWeightValid && isStockNameValid && !isSubmitting ? "bg-primary-600 text-white hover:bg-primary-700" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
             >
-              {/* Plus Icon SVG */}
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-              자산 추가
+              {isSubmitting ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  백테스트 실행 중...
+                </>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  백테스트 실행
+                </>
+              )}
             </button>
           </div>
-        </div>
 
-        {/* 백테스트 실행 버튼 */}
-        <div className="flex justify-center">
-          <button
-            type="submit"
-            disabled={!isWeightValid || !isStockNameValid || isSubmitting}
-            className={`flex items-center px-6 py-3 rounded-lg text-lg font-medium transition duration-200 ${isWeightValid && isStockNameValid && !isSubmitting ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
-          >
-            {isSubmitting ? (
-              <>
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                백테스트 실행 중...
-              </>
-            ) : (
-              <>
-                {/* Chart Icon SVG */}
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-                백테스트 실행
-              </>
-            )}
-          </button>
-        </div>
-        {/* 실행 중 에러 메시지 */}
-        {error && <p className="text-red-500 text-center mt-4">{error}</p>}
-      </form>
+          {/* 실행 중 에러 메시지 */}
+          {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+        </form>
 
-      {/* StockSearchModal 팝업 */}
-      {isSearchModalOpen && (
-        <StockSearchModal
-          onSelect={handleStockSelect}
-          onClose={() => setIsSearchModalOpen(false)}
-        />
-      )}
+        {/* StockSearchModal 팝업 */}
+        {isSearchModalOpen && (
+          <StockSearchModal
+            onSelect={handleStockSelect}
+            onClose={() => setIsSearchModalOpen(false)}
+          />
+        )}
+      </div>
     </div>
   );
 };

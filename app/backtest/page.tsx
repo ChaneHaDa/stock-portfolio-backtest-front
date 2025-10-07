@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config/apiConfig";
+import { DEFAULT_PORTFOLIO_ITEM, STORAGE_KEYS } from "@/utils/constants";
 
 // PortfolioItem 인터페이스에 stockId 추가 (선택되지 않은 경우 null)
 interface PortfolioItem {
@@ -89,7 +90,7 @@ const StockSearchModal: React.FC<StockSearchModalProps> = ({ onSelect, onClose }
           <h2 className="text-2xl font-bold text-gray-800">종목 선택</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors p-2"
+            className="text-secondary-500 hover:text-secondary-700 transition-colors p-2"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -310,7 +311,7 @@ const PortfolioForm = () => {
 
     if (response.ok) {
       const data = await response.json();
-      sessionStorage.setItem("backtestResult", JSON.stringify(data.data));
+      sessionStorage.setItem(STORAGE_KEYS.BACKTEST_RESULT, JSON.stringify(data.data));
       router.push("/backtest/result");
     } else {
       console.error("API 호출 오류:", response.statusText);
@@ -381,33 +382,46 @@ const PortfolioForm = () => {
     0
   );
 
-  // 가중치 유효성 검사 -> 합계가 100%인지 확인
-  const isWeightValid = Math.abs(totalWeight - 100) < 0.0001;
-  // 종목 유효성 검사 -> 모든 항목이 올바르게 입력되었는지 확인
-  const isStockNameValid = portfolioItems.every(item => {
-    if (item.isCustom) {
-      // 사용자 정의 종목은 이름과 수익률이 모두 입력되어야 함
-      return item.customStockName && item.customStockName.trim() !== "" && 
-             item.annualReturnRate && item.annualReturnRate.trim() !== "";
-    } else {
-      // 기존 종목은 종목명이 입력되어야 함
-      return item.stockName && item.stockName.trim() !== "";
-    }
-  });
+  const validation = useMemo(() => {
+    const isWeightValid = Math.abs(totalWeight - 100) < 0.0001;
+    const isStockNameValid = portfolioItems.every(item => {
+      if (item.isCustom) {
+        // 사용자 정의 종목은 이름과 수익률이 모두 입력되어야 함
+        return item.customStockName && item.customStockName.trim() !== "" && 
+               item.annualReturnRate && item.annualReturnRate.trim() !== "";
+      } else {
+        // 기존 종목은 종목명이 입력되어야 함
+        return item.stockName && item.stockName.trim() !== "";
+      }
+    });
+    const hasValidAmount = parseFloat(amount) > 0;
+    const hasValidDates = startDate && endDate && new Date(startDate) < new Date(endDate);
+    const hasUniqueStocks = new Set(portfolioItems.map(item => item.stockId)).size === portfolioItems.length;
+    
+    return {
+      isWeightValid,
+      isStockNameValid,
+      hasValidAmount,
+      hasValidDates,
+      hasUniqueStocks,
+      isFormValid: isWeightValid && isStockNameValid && hasValidAmount && hasValidDates && hasUniqueStocks
+    };
+  }, [totalWeight, portfolioItems, amount, startDate, endDate]);
 
   return (
-    <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-[960px] mx-auto">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">
-        포트폴리오 백테스트
-      </h1>
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white py-8">
+      <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-[960px] mx-auto border border-primary-200">
+        <h1 className="text-3xl font-bold text-secondary-800 mb-6 pb-2 border-b-2 border-primary-300">
+          포트폴리오 백테스트
+        </h1>
       
       <form className="w-full" onSubmit={handleSubmit}>
         {/* 기본 설정 섹션 */}
-        <div className="bg-gray-50 p-6 rounded-xl mb-8">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">기본 설정</h2>
+        <div className="bg-primary-50 p-6 rounded-xl mb-8">
+          <h2 className="text-xl font-semibold text-secondary-700 mb-4">기본 설정</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="startDate" className="block text-gray-700 font-medium mb-2">
+              <label htmlFor="startDate" className="block text-secondary-700 font-medium mb-2">
                 시작 날짜
               </label>
               <input
@@ -416,11 +430,11 @@ const PortfolioForm = () => {
                 required
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+                className="border border-primary-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 bg-white"
               />
             </div>
             <div>
-              <label htmlFor="endDate" className="block text-gray-700 font-medium mb-2">
+              <label htmlFor="endDate" className="block text-secondary-700 font-medium mb-2">
                 종료 날짜
               </label>
               <input
@@ -429,11 +443,11 @@ const PortfolioForm = () => {
                 required
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+                className="border border-primary-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 bg-white"
               />
             </div>
             <div>
-              <label htmlFor="amount" className="block text-gray-700 font-medium mb-2">
+              <label htmlFor="amount" className="block text-secondary-700 font-medium mb-2">
                 초기 투자금액 (원)
               </label>
               <input
@@ -442,24 +456,24 @@ const PortfolioForm = () => {
                 required
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+                className="border border-primary-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 bg-white"
               />
             </div>
           </div>
         </div>
 
         {/* 포트폴리오 구성 섹션 */}
-        <div className="bg-gray-50 p-6 rounded-xl mb-8">
+        <div className="bg-primary-50 p-6 rounded-xl mb-8">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-700">포트폴리오 구성</h2>
-            <div className={`text-sm font-medium ${isWeightValid ? "text-green-600" : "text-red-600"}`}>
+            <h2 className="text-xl font-semibold text-secondary-700">포트폴리오 구성</h2>
+            <div className={`text-sm font-medium ${validation.isWeightValid ? "text-green-600" : "text-red-600"}`}>
               총 가중치: {totalWeight.toFixed(2)}%
-              {!isWeightValid && " (가중치 합계는 100%가 되어야 합니다)"}
+              {!validation.isWeightValid && " (가중치 합계는 100%가 되어야 합니다)"}
             </div>
           </div>
 
           <div className="mb-4 bg-white rounded-lg p-4 shadow-sm">
-            <div className="grid grid-cols-12 gap-4 mb-2 text-gray-600 font-medium px-2">
+            <div className="grid grid-cols-12 gap-4 mb-2 text-secondary-600 font-medium px-2">
               <div className="col-span-1">번호</div>
               <div className="col-span-7">종목명</div>
               <div className="col-span-2 text-center">비중 (%)</div>
@@ -469,9 +483,9 @@ const PortfolioForm = () => {
             {portfolioItems.map((item, index) => (
               <div 
                 key={index} 
-                className="grid grid-cols-12 gap-4 items-center py-3 px-2 border-b border-gray-100 hover:bg-blue-50 transition-colors duration-150 rounded-md"
+                className="grid grid-cols-12 gap-4 items-center py-3 px-2 border-b border-primary-100 hover:bg-primary-100 transition-colors duration-150 rounded-md"
               >
-                <div className="col-span-1 text-gray-600 font-medium">
+                <div className="col-span-1 text-secondary-600 font-medium">
                   {index + 1}
                 </div>
                 
@@ -525,9 +539,9 @@ const PortfolioForm = () => {
                       required
                       value={item.weight}
                       onChange={(e) => handleChange(index, "weight", e.target.value)}
-                      className="border border-gray-300 rounded-lg p-2 w-full text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="border border-primary-200 rounded-lg p-2 w-full text-center focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
                     />
-                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-secondary-500">
                       %
                     </span>
                   </div>
@@ -557,7 +571,7 @@ const PortfolioForm = () => {
             <button
               type="button"
               onClick={addPortfolioItem}
-              className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+              className="flex items-center bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition duration-200 shadow-md"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -567,13 +581,27 @@ const PortfolioForm = () => {
           </div>
         </div>
 
+        {/* 검증 메시지 */}
+        {!validation.isFormValid && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <h3 className="font-medium text-red-800 mb-2">다음 항목들을 확인해주세요:</h3>
+            <ul className="text-sm text-red-700 space-y-1">
+              {!validation.isWeightValid && <li>• 가중치 합계가 100%가 되어야 합니다.</li>}
+              {!validation.isStockNameValid && <li>• 모든 종목을 선택해야 합니다.</li>}
+              {!validation.hasValidAmount && <li>• 투자 금액은 0보다 커야 합니다.</li>}
+              {!validation.hasValidDates && <li>• 시작 날짜는 종료 날짜보다 이전이어야 합니다.</li>}
+              {!validation.hasUniqueStocks && <li>• 중복된 종목이 있습니다.</li>}
+            </ul>
+          </div>
+        )}
+
         <div className="flex justify-center">
           <button
             type="submit"
-            disabled={!isWeightValid || !isStockNameValid} // 종목명 유효성 검사 추가
-            className={`flex items-center px-6 py-3 rounded-lg text-lg font-medium transition duration-200 ${
-              isWeightValid && isStockNameValid // 두 조건 모두 만족해야 활성화
-                ? "bg-blue-600 text-white hover:bg-blue-700"
+            disabled={!validation.isFormValid}
+            className={`flex items-center px-8 py-3 rounded-lg text-lg font-medium transition duration-200 shadow-lg ${
+              validation.isFormValid
+                ? "bg-primary-600 text-white hover:bg-primary-700"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
@@ -583,15 +611,16 @@ const PortfolioForm = () => {
             백테스트 실행
           </button>
         </div>
-      </form>
-      
-      {/* StockSearchModal 팝업 */}
-      {isSearchModalOpen && (
-        <StockSearchModal
-          onSelect={handleStockSelect}
-          onClose={() => setIsSearchModalOpen(false)}
-        />
-      )}
+        </form>
+        
+        {/* StockSearchModal 팝업 */}
+        {isSearchModalOpen && (
+          <StockSearchModal
+            onSelect={handleStockSelect}
+            onClose={() => setIsSearchModalOpen(false)}
+          />
+        )}
+      </div>
     </div>
   );
 };
