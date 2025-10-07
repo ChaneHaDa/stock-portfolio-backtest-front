@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stock Portfolio Backtest Frontend
 
-## Getting Started
+이 프로젝트는 Next.js를 사용하여 개발된 주식 포트폴리오 관리 및 백테스팅 프론트엔드 애플리케이션입니다.
 
-First, run the development server:
+## 주요 기능
+
+*   사용자 인증 (로그인, 회원가입)
+*   주식 포트폴리오 생성, 조회, 수정
+*   포트폴리오 기반 백테스팅 실행 및 결과 확인
+*   Recharts를 이용한 데이터 시각화
+
+## 기술 스택
+
+*   **프레임워크:** Next.js (v15.1.1)
+*   **UI 라이브러리:** React (v19)
+*   **언어:** TypeScript
+*   **스타일링:** Tailwind CSS
+*   **차트:** Recharts
+*   **린팅:** ESLint
+
+## 시작하기
+
+### 1. 의존성 설치
+
+프로젝트 디렉토리에서 다음 명령어를 실행하여 필요한 패키지를 설치합니다.
+
+```bash
+npm install
+```
+
+### 2. 개발 서버 실행
+
+다음 명령어를 실행하여 개발 서버를 시작합니다. Turbopack을 사용하여 빠르게 실행됩니다.
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+개발 서버는 기본적으로 `http://localhost:3000` 에서 실행됩니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 빌드 및 배포
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 프로덕션 빌드
 
-## Learn More
+다음 명령어를 실행하여 프로덕션용으로 애플리케이션을 빌드합니다.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 프로덕션 서버 시작
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+빌드된 애플리케이션을 실행하려면 다음 명령어를 사용합니다.
 
-## Deploy on Vercel
+```bash
+npm run start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 코드 린팅
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+다음 명령어를 사용하여 코드 스타일 및 잠재적 오류를 검사합니다.
+
+```bash
+npm run lint

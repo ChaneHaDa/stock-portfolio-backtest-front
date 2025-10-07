@@ -34,15 +34,32 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok && data.status === 'success') {
-        localStorage.setItem('accessToken', data.data.accessToken);
-        setIsAuthenticated(true);
-        setResponseMessage('로그인 성공!');
-        
-        router.push('/dashboard');
+        // 토큰이 실제로 존재하는지 확인
+        if (data.data?.accessToken) {
+          // 토큰 저장
+          localStorage.setItem('accessToken', data.data.accessToken);
+          
+          // 만약 만료 시간이 있다면 함께 저장
+          if (data.data.expiresIn) {
+            const expiryTime = new Date().getTime() + data.data.expiresIn * 1000;
+            localStorage.setItem('tokenExpiry', expiryTime.toString());
+          }
+          
+          // 인증 상태 업데이트
+          setIsAuthenticated(true);
+          setResponseMessage('로그인 성공!');
+          
+          // 리디렉션
+          router.push('/portfolio');
+        } else {
+          // 토큰이 없는 경우 오류 처리
+          setResponseMessage('로그인은 성공했으나 토큰을 받지 못했습니다.');
+          console.error('No access token received');
+        }
       } else {
-        setIsAuthenticated(false);
-        setResponseMessage(data.message || '로그인 실패!');
-      }
+        // 응답이 성공적이지 않은 경우
+        setResponseMessage(data.message || '로그인 실패');
+      }      
     } catch (error) {
       console.error('로그인 요청 중 에러 발생:', error);
       setIsAuthenticated(false);
@@ -51,55 +68,66 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow">
-      <h1 className="text-2xl font-bold mb-6">로그인</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="id" className="block text-sm font-medium">
-            사용자 ID
-          </label>
-          <input
-            type="text"
-            id="id"
-            name="id"
-            value={credentials.id}
-            onChange={handleChange}
-            required
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-          />
-        </div>
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium">
-            비밀번호
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={credentials.password}
-            onChange={handleChange}
-            required
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
-        >
-          로그인
-        </button>
-      </form>
-      {responseMessage && (
-        <div
-          className={`mt-4 p-3 rounded ${
-            isAuthenticated
-              ? 'bg-green-100 text-green-800'
-              : 'bg-red-100 text-red-800'
-          }`}
-        >
-          {responseMessage}
-        </div>
-      )}
+    <div className="flex flex-col w-full items-center flex-grow bg-gradient-to-br from-primary-50 to-white min-h-screen py-12"> 
+      <div className="w-full min-w-[300px] max-w-[500px] p-8 space-y-6 bg-white rounded-xl shadow-xl border border-primary-100">
+        <h1 className="text-3xl font-bold text-center text-secondary-800">로그인</h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label 
+              htmlFor="id" 
+              className="block text-sm font-medium text-secondary-700 mb-1"
+            >
+              사용자 ID
+            </label>
+            <input
+              type="text"
+              id="id"
+              name="id"
+              value={credentials.id}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:border-primary-500 transition duration-150 ease-in-out"
+              placeholder="아이디를 입력하세요"
+            />
+          </div>
+          <div>
+            <label 
+              htmlFor="password" 
+              className="block text-sm font-medium text-secondary-700 mb-1"
+            >
+              비밀번호
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={credentials.password}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:border-primary-500 transition duration-150 ease-in-out"
+              placeholder="비밀번호를 입력하세요"
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full py-3 px-4 font-semibold text-white bg-primary-600 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-150 ease-in-out"
+          >
+            로그인
+          </button>
+        </form>
+        {responseMessage && (
+          <div
+            className={`mt-6 p-4 rounded-md text-sm ${
+              isAuthenticated
+                ? 'bg-green-100 text-green-700 border border-green-200'
+                : 'bg-red-100 text-red-700 border border-red-200'
+            }`}
+            role="alert"
+          >
+            {responseMessage}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
