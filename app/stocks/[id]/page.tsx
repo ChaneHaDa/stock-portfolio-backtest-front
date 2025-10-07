@@ -207,46 +207,49 @@ const StockDetailPage = () => {
                 기준일: {latestPrice.baseDate}
               </p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="sm:col-span-2 lg:col-span-1">
                 <p className="text-sm text-secondary-600 mb-1">현재가</p>
-                <p className="text-3xl font-bold text-secondary-800">
+                <p className="text-2xl font-semibold text-secondary-800">
                   {latestPrice.closePrice.toLocaleString()}원
                 </p>
-                <p className={`text-sm font-medium mt-1 ${
-                  changeInfo.rate >= 0 ? 'text-rose-600' : 'text-blue-600'
+                <div className={`mt-2 inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm font-medium ${
+                  changeInfo.rate >= 0 ? 'bg-rose-50 text-rose-600' : 'bg-blue-50 text-blue-600'
                 }`}>
-                  {changeInfo.rate >= 0 ? '+' : ''}{changeInfo.amount.toLocaleString()}원
-                  ({changeInfo.rate >= 0 ? '+' : ''}{changeInfo.rate.toFixed(2)}%)
-                </p>
+                  <span>{changeInfo.rate >= 0 ? '상승' : '하락'}</span>
+                  <span>
+                    {changeInfo.rate >= 0 ? '+' : ''}{changeInfo.amount.toLocaleString()}원
+                    ({changeInfo.rate >= 0 ? '+' : ''}{changeInfo.rate.toFixed(2)}%)
+                  </span>
+                </div>
               </div>
-              <div>
+              <div className="flex flex-col gap-1">
                 <p className="text-sm text-secondary-600 mb-1">시가</p>
-                <p className="text-xl font-semibold text-secondary-800">
+                <p className="text-lg font-semibold text-secondary-800">
                   {latestPrice.openPrice.toLocaleString()}원
                 </p>
               </div>
-              <div>
+              <div className="flex flex-col gap-1">
                 <p className="text-sm text-secondary-600 mb-1">고가</p>
-                <p className="text-xl font-semibold text-rose-600">
+                <p className="text-lg font-semibold text-rose-600">
                   {latestPrice.highPrice.toLocaleString()}원
                 </p>
               </div>
-              <div>
+              <div className="flex flex-col gap-1">
                 <p className="text-sm text-secondary-600 mb-1">저가</p>
-                <p className="text-xl font-semibold text-blue-600">
+                <p className="text-lg font-semibold text-blue-600">
                   {latestPrice.lowPrice.toLocaleString()}원
                 </p>
               </div>
-              <div>
+              <div className="flex flex-col gap-1">
                 <p className="text-sm text-secondary-600 mb-1">거래량</p>
-                <p className="text-xl font-semibold text-secondary-800">
+                <p className="text-lg font-semibold text-secondary-800">
                   {latestPrice.tradeQuantity.toLocaleString()}주
                 </p>
               </div>
-              <div className="md:col-span-3">
+              <div className="sm:col-span-2 lg:col-span-3 flex flex-col gap-1">
                 <p className="text-sm text-secondary-600 mb-1">거래대금</p>
-                <p className="text-xl font-semibold text-secondary-800">
+                <p className="text-lg font-semibold text-secondary-800">
                   {(latestPrice.tradeAmount / 1000000).toLocaleString()}백만원
                 </p>
               </div>
