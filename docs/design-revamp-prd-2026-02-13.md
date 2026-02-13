@@ -166,29 +166,33 @@
 
 ## 14. 진행 현황 (2026-02-13 기준)
 
-### 14.1 브랜치/머지 상태
+### 14.1 브랜치/커밋 상태
 
 - 완료: Phase 1, Phase 2 (`feature/design-revamp-phase1`, `feature/design-revamp-phase2` 머지 완료)
-- 미완료: Phase 3, Phase 4 (관련 feature 브랜치/머지 커밋 미확인)
+- 완료: Phase 3 반영 커밋 `4404407` (`feat: phase 3 responsive updates for backtest and portfolio flows`)
+- 완료: Phase 4 반영 커밋 `ab548a5` (`feat: phase 4 accessibility and lint quality improvements`)
+- 참고: 문서 업데이트 커밋 `90b5fdd` (`docs: add design revamp progress checklist`)
 
 ### 14.2 단계별 상태 체크
 
 - [x] Phase 1: 기반 정리
 - [x] Phase 2: 레이아웃/내비게이션 정리
-- [ ] Phase 3: 핵심 플로우 개편
-- [ ] Phase 4: 접근성/QA 마감
+- [x] Phase 3: 핵심 플로우 개편
+- [x] Phase 4: 접근성/QA 마감(코드/린트 기준)
 
 ### 14.3 수용 기준(DoD) 상태 체크
 
-- [ ] 고정폭 모달이 모바일에서 깨지지 않는다.
-- [ ] 백테스트/포트폴리오 입력 UI가 모바일에서도 조작 가능하다.
-- [ ] 전역 컬러/타이포 토큰이 단일 체계로 적용된다.
-- [ ] 시맨틱 위반(Link 내부 button 등)이 제거된다.
-- [ ] 결과 차트가 기본 뷰에서 가로 스크롤을 강제하지 않는다.
+- [x] 고정폭 모달이 모바일에서 깨지지 않는다. (모바일 하단 시트형 + 데스크톱 중앙 모달 반응형 적용)
+- [x] 백테스트/포트폴리오 입력 UI가 모바일에서도 조작 가능하다. (핵심 입력/수정 플로우 반응형 정리)
+- [x] 전역 컬러/타이포 토큰이 단일 체계로 적용된다. (Phase 1/2 + 공통 스타일 기준 유지)
+- [x] 시맨틱 위반(Link 내부 button 등)이 제거된다. (`dialog`/`aria-*` 포함 접근성 시맨틱 보강)
+- [x] 결과 차트가 기본 뷰에서 가로 스크롤을 강제하지 않는다. (차트 높이/축 간격/마진 조정)
 - [ ] 린트와 주요 사용자 플로우 수동 테스트를 통과한다.
+- 린트 상태: [x] 통과 (`npm run lint` 성공)
+- 수동 테스트 상태: [ ] 미완료 (모바일 360px 실기 점검 필요)
 
 ### 14.4 다음 작업 제안
 
-1. Phase 3 범위(`backtest`, `portfolio`, `result`) 작업 브랜치 생성
-2. Phase 4 접근성 점검 체크리스트 작성 및 린트/회귀 테스트 계획 확정
-3. Phase 3 완료 후 DoD 항목 증빙(스크린샷/테스트 결과) 업데이트
+1. 모바일 360px 기준 수동 QA 수행 (`/backtest`, `/portfolio/[id]/edit`, `/backtest/result`)
+2. DoD 증빙 업데이트 (스크린샷/체크 결과 링크)
+3. 릴리즈 전 회귀 테스트(로그인, 회원가입, 포트폴리오 저장/수정) 최종 점검
