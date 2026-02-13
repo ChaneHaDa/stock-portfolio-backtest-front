@@ -18,8 +18,3 @@ export const validateApiConfig = (): void => {
     console.warn('API_BASE_URL not configured, using default');
   }
 };
-
-export const getAlphaVantageKey = (): string | null => {
-  const key = process.env.NEXT_PUBLIC_ALPHA_VANTAGE_API_KEY;
-  return key && key.trim() ? key.trim() : null;
-};
