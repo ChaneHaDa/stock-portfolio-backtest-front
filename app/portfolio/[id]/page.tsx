@@ -140,12 +140,11 @@ export default function PortfolioDetailPage() {
             {portfolio.name} {/* 항상 텍스트로 표시 */}
           </h1>
           {/* 수정 버튼 대신 "백테스트 및 수정" 버튼 추가 */}
-          <Link href={`/portfolio/${id}/edit`} passHref>
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              백테스트 및 수정
-            </button>
+          <Link
+            href={`/portfolio/${id}/edit`}
+            className="inline-flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            백테스트 및 수정
           </Link>
         </div>
 

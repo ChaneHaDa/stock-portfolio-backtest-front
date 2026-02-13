@@ -626,8 +626,8 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
             </div>
             <h3 className="text-lg font-bold text-slate-800">월별 수익률 추이</h3>
           </div>
-          <div className="h-[500px] overflow-x-auto">
-            <ResponsiveContainer width="150%" height="100%">
+          <div className="h-[420px] sm:h-[500px]">
+            <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={processMonthlyData(result.monthlyRor)}
                 margin={{ top: 20, right: 40, left: 20, bottom: 80 }}

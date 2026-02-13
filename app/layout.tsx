@@ -12,6 +12,8 @@ export const metadata: Metadata = {
 };
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  const currentYear = new Date().getFullYear();
+
   return (
     <html lang="ko">
       <body className={`${inter.className} antialiased`}>
@@ -20,7 +22,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           {children}
         </main>
         <footer className="bg-gray-800 text-white text-center p-4 mt-auto flex-shrink-0"> 
-          <p>© 2025 Stock Helper</p>
+          <p>© {currentYear} Stock Helper</p>
         </footer>
       </body>
     </html>

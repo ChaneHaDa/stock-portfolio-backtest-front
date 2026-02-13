@@ -84,12 +84,13 @@ const StockSearchModal: React.FC<StockSearchModalProps> = ({ onSelect, onClose }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-      <div className="bg-white p-6 rounded-xl w-[500px] shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 backdrop-blur-sm">
+      <div className="bg-white p-6 rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800">종목 선택</h2>
           <button
             onClick={onClose}
+            aria-label="종목 선택 모달 닫기"
             className="text-secondary-500 hover:text-secondary-700 transition-colors p-2"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -146,6 +147,7 @@ const StockSearchModal: React.FC<StockSearchModalProps> = ({ onSelect, onClose }
               />
               <button
                 onClick={handleSearch}
+                aria-label="종목 검색"
                 className="bg-blue-600 text-white px-4 py-3 rounded-r-lg hover:bg-blue-700 transition duration-200 flex items-center"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -473,23 +475,25 @@ const PortfolioForm = () => {
           </div>
 
           <div className="mb-4 bg-white rounded-lg p-4 shadow-sm">
-            <div className="grid grid-cols-12 gap-4 mb-2 text-secondary-600 font-medium px-2">
-              <div className="col-span-1">번호</div>
-              <div className="col-span-7">종목명</div>
-              <div className="col-span-2 text-center">비중 (%)</div>
-              <div className="col-span-2 text-center">관리</div>
+            <div className="hidden md:grid md:grid-cols-12 gap-4 mb-2 text-secondary-600 font-medium px-2">
+              <div className="md:col-span-1">번호</div>
+              <div className="md:col-span-7">종목명</div>
+              <div className="md:col-span-2 text-center">비중 (%)</div>
+              <div className="md:col-span-2 text-center">관리</div>
             </div>
             
             {portfolioItems.map((item, index) => (
               <div 
                 key={index} 
-                className="grid grid-cols-12 gap-4 items-center py-3 px-2 border-b border-primary-100 hover:bg-primary-100 transition-colors duration-150 rounded-md"
+                className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 items-center py-3 px-2 border-b border-primary-100 hover:bg-primary-100 transition-colors duration-150 rounded-md"
               >
-                <div className="col-span-1 text-secondary-600 font-medium">
+                <div className="md:col-span-1 text-secondary-600 font-medium">
+                  <span className="md:hidden mr-1">번호:</span>
                   {index + 1}
                 </div>
                 
-                <div className="col-span-7">
+                <div className="md:col-span-7">
+                  <p className="md:hidden text-xs text-secondary-500 mb-1">종목명</p>
                   <div className="flex items-center gap-2">
                     {item.isCustom ? (
                       <div className="flex items-center gap-2 flex-1">
@@ -519,6 +523,7 @@ const PortfolioForm = () => {
                         setCurrentSearchIndex(index);
                         setIsSearchModalOpen(true);
                       }}
+                      aria-label={`${index + 1}번째 종목 검색`}
                       className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition duration-200"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -528,7 +533,8 @@ const PortfolioForm = () => {
                   </div>
                 </div>
                 
-                <div className="col-span-2">
+                <div className="md:col-span-2">
+                  <p className="md:hidden text-xs text-secondary-500 mb-1">비중 (%)</p>
                   <div className="relative">
                     <input
                       type="number"
@@ -547,11 +553,12 @@ const PortfolioForm = () => {
                   </div>
                 </div>
                 
-                <div className="col-span-2 flex justify-center">
+                <div className="md:col-span-2 flex md:justify-center">
                   <button
                     type="button"
                     onClick={() => removePortfolioItem(index)}
                     disabled={portfolioItems.length <= 1}
+                    aria-label={`${index + 1}번째 자산 삭제`}
                     className={`p-2 rounded-full ${
                       portfolioItems.length <= 1
                         ? "bg-gray-200 text-gray-400 cursor-not-allowed"
