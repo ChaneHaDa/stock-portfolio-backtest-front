@@ -33,13 +33,13 @@ const Home = () => {
           // 로그인 상태일 때: 포트폴리오 관리 + 백테스팅
           <>
             <Link href="/portfolio">
-              <div className="block p-8 bg-gradient-to-br from-primary-600 to-primary-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer text-center transform hover:-translate-y-1">
+              <div className="p-8 bg-gradient-to-br from-primary-600 to-primary-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer text-center transform hover:-translate-y-1">
                 <h3 className="text-2xl font-semibold mb-3">포트폴리오 관리</h3>
                 <p className="text-primary-100">나만의 투자 포트폴리오를 생성하고 관리하세요.</p>
               </div>
             </Link>
             <Link href="/backtest">
-              <div className="block p-8 bg-gradient-to-br from-secondary-600 to-secondary-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer text-center transform hover:-translate-y-1">
+              <div className="p-8 bg-gradient-to-br from-secondary-600 to-secondary-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer text-center transform hover:-translate-y-1">
                 <h3 className="text-2xl font-semibold mb-3">백테스팅</h3>
                 <p className="text-secondary-200">과거 데이터를 기반으로 투자 전략의 성과를 분석하세요.</p>
               </div>
@@ -49,13 +49,13 @@ const Home = () => {
           // 로그아웃 상태일 때: 회원가입 + 백테스팅
           <>
             <Link href="/register">
-              <div className="block p-8 bg-gradient-to-br from-primary-600 to-primary-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer text-center transform hover:-translate-y-1">
+              <div className="p-8 bg-gradient-to-br from-primary-600 to-primary-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer text-center transform hover:-translate-y-1">
                 <h3 className="text-2xl font-semibold mb-3">회원가입</h3>
                 <p className="text-primary-100">지금 가입하고 포트폴리오 관리를 시작하세요.</p>
               </div>
             </Link>
             <Link href="/backtest">
-              <div className="block p-8 bg-gradient-to-br from-secondary-600 to-secondary-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer text-center transform hover:-translate-y-1">
+              <div className="p-8 bg-gradient-to-br from-secondary-600 to-secondary-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer text-center transform hover:-translate-y-1">
                 <h3 className="text-2xl font-semibold mb-3">백테스팅 체험</h3>
                 <p className="text-secondary-200">로그인 없이 백테스팅 기능을 체험해보세요.</p>
               </div>

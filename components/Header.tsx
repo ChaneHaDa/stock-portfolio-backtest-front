@@ -36,7 +36,7 @@ const Header = () => {
           <div className="flex items-center space-x-8">
             <Link 
               href="/" 
-              className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent hover:from-blue-300 hover:to-purple-300 transition-all duration-200"
+              className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent hover:from-sky-300 hover:to-cyan-300 transition-all duration-200"
             >
               Stock Helper
             </Link>
