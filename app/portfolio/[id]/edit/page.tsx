@@ -29,6 +29,9 @@ interface StockSearchModalProps {
   onClose: () => void;
 }
 
+const getErrorMessage = (error: unknown, fallback: string): string =>
+  error instanceof Error ? error.message : fallback;
+
 const StockSearchModal: React.FC<StockSearchModalProps> = ({ onSelect, onClose }) => {
   const [activeTab, setActiveTab] = useState<'search' | 'custom'>('search');
   const [query, setQuery] = useState("");
@@ -53,8 +56,8 @@ const StockSearchModal: React.FC<StockSearchModalProps> = ({ onSelect, onClose }
       }
       const data = await res.json();
       setResults(data.data || []);
-    } catch (err: any) {
-      setError(err.message || "검색 중 오류 발생");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "검색 중 오류 발생"));
     } finally {
       setLoading(false);
     }
@@ -85,10 +88,15 @@ const StockSearchModal: React.FC<StockSearchModalProps> = ({ onSelect, onClose }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50 p-0 backdrop-blur-sm sm:items-center sm:p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="stock-search-modal-title"
+    >
       <div className="max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-white p-5 shadow-2xl sm:max-w-lg sm:rounded-xl sm:p-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-secondary-800">종목 선택</h2>
+          <h2 id="stock-search-modal-title" className="text-2xl font-bold text-secondary-800">종목 선택</h2>
           <button
             onClick={onClose}
             aria-label="종목 선택 모달 닫기"
@@ -164,7 +172,7 @@ const StockSearchModal: React.FC<StockSearchModalProps> = ({ onSelect, onClose }
             )}
 
             {error && (
-              <p className="text-red-500 mb-4 p-2 bg-red-50 rounded-lg">{error}</p>
+              <p className="text-red-500 mb-4 p-2 bg-red-50 rounded-lg" role="alert" aria-live="assertive">{error}</p>
             )}
 
             <div className="max-h-[300px] overflow-y-auto">
@@ -347,8 +355,8 @@ const PortfolioEditForm = () => {
         } else {
           throw new Error(responseData.message || "데이터 로드 실패");
         }
-      } catch (err: any) {
-        setError(`데이터 로드 오류: ${err.message}`);
+      } catch (err: unknown) {
+        setError(`데이터 로드 오류: ${getErrorMessage(err, "알 수 없는 오류")}`);
         console.error("Error fetching portfolio detail:", err);
       } finally {
         setLoading(false);
@@ -440,8 +448,8 @@ const PortfolioEditForm = () => {
       } else {
         throw new Error(data.message || "백테스트 실행 실패");
       }
-    } catch (err: any) {
-      setError(`백테스트 실행 오류: ${err.message}`);
+    } catch (err: unknown) {
+      setError(`백테스트 실행 오류: ${getErrorMessage(err, "알 수 없는 오류")}`);
       console.error("백테스트 API 호출 오류:", err);
     } finally {
       setIsSubmitting(false);
@@ -755,7 +763,7 @@ const PortfolioEditForm = () => {
           </div>
 
           {/* 실행 중 에러 메시지 */}
-          {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+          {error && <p className="text-red-500 text-center mt-4" role="alert" aria-live="polite">{error}</p>}
         </form>
 
         {/* StockSearchModal 팝업 */}

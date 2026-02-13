@@ -16,8 +16,7 @@ import {
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { authenticatedApiCall, ApiError } from "@/utils/api";
-import { formatPercentage, formatCurrency } from "@/utils/formatters";
+import { formatPercentage } from "@/utils/formatters";
 import { BacktestResult as BacktestResultType, ChartData, MonthlyData } from "@/types/portfolio";
 import { CHART_COLORS, STORAGE_KEYS } from "@/utils/constants";
 import { API_BASE_URL } from "@/config/apiConfig";
@@ -39,13 +38,6 @@ interface SaveUpdateData {
   description: string;
 }
 
-// 기존 PortfolioItem 인터페이스 (백테스트 결과 저장 시 사용)
-interface PortfolioItem {
-  stockId: number;
-  stockName: string;
-  weight: number;
-}
-
 // 수정된 포트폴리오 데이터 인터페이스 (sessionStorage에서 로드)
 interface UpdatedPortfolioData {
     id: number;
@@ -55,6 +47,21 @@ interface UpdatedPortfolioData {
     startDate: string;
     endDate: string;
     portfolioItemRequestDTOList: Array<{ stockId: number | null; weight: number }>;
+}
+
+interface InputPortfolioItem {
+  stockId?: number | null;
+  customStockName?: string;
+  stockName?: string;
+  annualReturnRate?: number;
+  weight: number;
+}
+
+interface PortfolioPerformanceItem {
+  name?: string;
+  customStockName?: string;
+  totalRor: number;
+  monthlyRor: Record<string, number>;
 }
 
 
@@ -98,7 +105,12 @@ const SaveUpdateModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-secondary-900/80 backdrop-blur-md">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-secondary-900/80 backdrop-blur-md"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="save-update-modal-title"
+    >
       <div className="bg-gradient-to-br from-white to-primary-50 rounded-3xl shadow-2xl w-full max-w-md p-8 m-4 border-2 border-primary-200 relative overflow-hidden">
         {/* 배경 장식 요소 */}
         <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary-200/20 rounded-full blur-3xl"></div>
@@ -116,12 +128,13 @@ const SaveUpdateModal = ({
                   )}
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-primary-700 to-primary-500 bg-clip-text text-transparent">
+              <h2 id="save-update-modal-title" className="text-2xl font-bold bg-gradient-to-r from-primary-700 to-primary-500 bg-clip-text text-transparent">
                 {isUpdateMode ? "포트폴리오 수정" : "백테스트 저장"}
               </h2>
             </div>
             <button
               onClick={onClose}
+              aria-label="저장/수정 모달 닫기"
               className="text-secondary-400 hover:text-secondary-600 transition-all p-2 hover:bg-secondary-100/50 rounded-2xl group"
               disabled={isLoading}
             >
@@ -241,25 +254,16 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
       .sort((a, b) => a.date.localeCompare(b.date));
   }, []);
 
-  const processPortfolioData = useCallback((portfolio: any[]): ChartData[] => {
+  const processPortfolioData = useCallback((portfolio: InputPortfolioItem[]): ChartData[] => {
     return portfolio.map((item) => ({
       name: item.stockName || item.customStockName || "알 수 없음",
       value: item.weight * 100,
     }));
   }, []);
 
-
-  const sectionStyle = "bg-white rounded-lg shadow p-6 mb-6";
-  const headingStyle = "text-2xl font-bold mb-4 text-gray-800";
-
   const portfolioData = useMemo(() => 
     processPortfolioData(result.portfolioInput.portfolioBacktestRequestItemDTOList),
     [processPortfolioData, result.portfolioInput.portfolioBacktestRequestItemDTOList]
-  );
-
-  const totalPortfolioValue = useMemo(() => 
-    portfolioData.reduce((acc, cur) => acc + cur.value, 0),
-    [portfolioData]
   );
 
   const { highestMonthlyRor, lowestMonthlyRor } = useMemo(() => {
@@ -330,7 +334,6 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
     setIsProcessing(true);
 
     try {
-      let response;
       let requestBody;
       let apiUrl;
       let method;
@@ -355,7 +358,7 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
         // --- 저장 모드 (POST 요청) ---
         method = 'POST';
         apiUrl = `${API_BASE_URL}/portfolios`;
-        const portfolioItemRequestDTOList = result.portfolioInput.portfolioBacktestRequestItemDTOList.map((item: any) => {
+        const portfolioItemRequestDTOList = result.portfolioInput.portfolioBacktestRequestItemDTOList.map((item: InputPortfolioItem) => {
           // 사용자 정의 종목인지 확인
           if (item.customStockName && item.annualReturnRate !== undefined) {
             return {
@@ -384,7 +387,7 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
 
       console.log(`API 요청 (${method}):`, apiUrl, requestBody);
 
-      response = await fetch(apiUrl, {
+      const response = await fetch(apiUrl, {
         method: method,
         headers: {
           'Content-Type': 'application/json',
@@ -736,7 +739,7 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
               <h3 className="text-lg font-bold text-slate-800">개별 종목 분석</h3>
             </div>
             <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
-              {result.portfolioBacktestResponseItemDTOList.map((stock: any, index: number) => (
+              {(result.portfolioBacktestResponseItemDTOList as PortfolioPerformanceItem[]).map((stock, index: number) => (
                 <div key={stock.name || stock.customStockName || index} className="p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:shadow-md transition-all duration-200">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center gap-3">
@@ -788,7 +791,7 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
 
       {/* 토스트 알림 */}
       {toast.show && (
-        <div className="fixed bottom-8 right-8 z-50 animate-slide-up">
+        <div className="fixed bottom-8 right-8 z-50 animate-slide-up" role="status" aria-live="polite">
           <div className={`
             flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border-2 backdrop-blur-md
             ${toast.type === 'success'
@@ -819,6 +822,7 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
             {/* 닫기 버튼 */}
             <button
               onClick={() => setToast({ show: false, message: '', type: 'success' })}
+              aria-label="알림 닫기"
               className="p-1 hover:bg-white/20 rounded-lg transition-colors"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

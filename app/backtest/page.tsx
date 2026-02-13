@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config/apiConfig";
-import { DEFAULT_PORTFOLIO_ITEM, STORAGE_KEYS } from "@/utils/constants";
+import { STORAGE_KEYS } from "@/utils/constants";
 
 // PortfolioItem 인터페이스에 stockId 추가 (선택되지 않은 경우 null)
 interface PortfolioItem {
@@ -28,6 +28,9 @@ interface StockSearchModalProps {
   onClose: () => void;
 }
 
+const getErrorMessage = (error: unknown, fallback: string): string =>
+  error instanceof Error ? error.message : fallback;
+
 const StockSearchModal: React.FC<StockSearchModalProps> = ({ onSelect, onClose }) => {
   const [activeTab, setActiveTab] = useState<'search' | 'custom'>('search');
   const [query, setQuery] = useState("");
@@ -52,8 +55,8 @@ const StockSearchModal: React.FC<StockSearchModalProps> = ({ onSelect, onClose }
       }
       const data = await res.json();
       setResults(data.data || []);
-    } catch (err: any) {
-      setError(err.message || "검색 중 오류 발생");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "검색 중 오류 발생"));
     } finally {
       setLoading(false);
     }
@@ -84,10 +87,15 @@ const StockSearchModal: React.FC<StockSearchModalProps> = ({ onSelect, onClose }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50 p-0 backdrop-blur-sm sm:items-center sm:p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="stock-search-modal-title"
+    >
       <div className="max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-white p-5 shadow-2xl sm:max-w-lg sm:rounded-xl sm:p-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">종목 선택</h2>
+          <h2 id="stock-search-modal-title" className="text-2xl font-bold text-gray-800">종목 선택</h2>
           <button
             onClick={onClose}
             aria-label="종목 선택 모달 닫기"
@@ -163,7 +171,7 @@ const StockSearchModal: React.FC<StockSearchModalProps> = ({ onSelect, onClose }
             )}
 
             {error && (
-              <p className="text-red-500 mb-4 p-2 bg-red-50 rounded-lg">{error}</p>
+              <p className="text-red-500 mb-4 p-2 bg-red-50 rounded-lg" role="alert" aria-live="assertive">{error}</p>
             )}
 
             <div className="max-h-[300px] overflow-y-auto">
@@ -590,7 +598,7 @@ const PortfolioForm = () => {
 
         {/* 검증 메시지 */}
         {!validation.isFormValid && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6" role="alert" aria-live="polite">
             <h3 className="font-medium text-red-800 mb-2">다음 항목들을 확인해주세요:</h3>
             <ul className="text-sm text-red-700 space-y-1">
               {!validation.isWeightValid && <li>• 가중치 합계가 100%가 되어야 합니다.</li>}
