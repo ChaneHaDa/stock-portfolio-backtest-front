@@ -71,17 +71,11 @@ const StockDetailPage = () => {
 
       // 기본 페이지 크기로 조회 (size 파라미터 제거)
       const url = `${API_BASE_URL}/stocks/${stockId}/prices?page=0&size=1000&sort=baseDate&direction=ASC`;
-      console.log('Fetching prices from:', url);
-
       const response = await fetch(url);
-      console.log('Response status:', response.status);
-
       const result: ApiResponse<StockPriceResponse> = await response.json();
-      console.log('Response data:', result);
 
       if (result.status === 'success') {
         const prices = result.data.content;
-        console.log('Prices count:', prices.length);
         setAllPrices(prices);
         setDisplayPrices(filterPricesByPeriod(prices, selectedPeriod));
       } else {
@@ -140,7 +134,7 @@ const StockDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white py-8 flex justify-center items-center">
+      <div className="page-shell flex items-center justify-center">
         <div className="flex items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
           <span className="ml-3 text-lg text-secondary-600">로딩 중...</span>
@@ -151,8 +145,8 @@ const StockDetailPage = () => {
 
   if (!stock) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white py-8">
-        <div className="container mx-auto px-4 max-w-7xl">
+      <div className="page-shell">
+        <div className="page-container">
           <div className="text-center">
             <p className="text-lg text-secondary-600">주식 정보를 찾을 수 없습니다.</p>
             <Link href="/stocks" className="text-primary-600 hover:text-primary-700 mt-4 inline-block">
@@ -165,8 +159,8 @@ const StockDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white py-8">
-      <div className="container mx-auto px-4 max-w-7xl">
+    <div className="page-shell">
+      <div className="page-container">
       {/* 뒤로가기 버튼 */}
       <div className="mb-6">
         <Link
@@ -181,7 +175,7 @@ const StockDetailPage = () => {
       </div>
 
       {/* 종목 기본 정보 */}
-      <div className="bg-white rounded-xl shadow-lg p-8 mb-6 border border-primary-200">
+      <div className="panel p-8 mb-6">
         <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-4xl font-bold text-secondary-800 mb-2">{stock.name}</h1>
@@ -259,18 +253,18 @@ const StockDetailPage = () => {
       </div>
 
       {/* 가격 차트 */}
-      <div className="bg-white rounded-xl shadow-lg p-8 border border-primary-200">
-        <div className="flex justify-between items-center mb-6">
+      <div className="panel p-8">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-2xl font-bold text-secondary-800">가격 차트</h2>
 
           {/* 기간 선택 버튼 */}
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {(['1W', '1M', '3M', '6M', '1Y'] as Period[]).map((period) => (
               <button
                 key={period}
                 onClick={() => handlePeriodChange(period)}
                 disabled={isPriceLoading}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+                className={`rounded-lg px-4 py-2 font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 ${
                   selectedPeriod === period
                     ? 'bg-primary-600 text-white'
                     : 'bg-gray-100 text-secondary-600 hover:bg-gray-200'
