@@ -214,13 +214,13 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex flex-col w-full items-center flex-grow bg-gradient-to-br from-primary-50 to-white min-h-screen py-12">
-      <div className="w-full min-w-[300px] max-w-[500px] mx-auto p-8 bg-white rounded-xl shadow-xl border border-primary-100">
+    <div className="page-shell flex w-full flex-col items-center">
+      <div className="panel-soft mx-auto w-full max-w-[500px] p-8">
         <h1 className="text-3xl font-bold text-center text-secondary-800">회원가입</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
         {/* 아이디 필드 */}
         <div className="relative">
-          <label htmlFor="username" className="block text-sm font-medium text-secondary-700 mb-1">
+          <label htmlFor="username" className="field-label">
             아이디
           </label>
           <div className="flex">
@@ -254,7 +254,7 @@ export default function RegisterPage() {
 
         {/* 비밀번호 필드 */}
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-secondary-700 mb-1">
+          <label htmlFor="password" className="field-label">
             비밀번호
           </label>
           <input
@@ -264,14 +264,14 @@ export default function RegisterPage() {
             value={formData.password}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:border-primary-500 transition duration-150 ease-in-out"
+            className="field-input"
             placeholder="비밀번호를 입력하세요"
           />
         </div>
 
         {/* 이메일 필드 */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-secondary-700 mb-1">
+          <label htmlFor="email" className="field-label">
             이메일
           </label>
           <div className="flex">
@@ -304,7 +304,7 @@ export default function RegisterPage() {
           {/* 인증 코드 입력 필드 */}
           {isEmailSent && !isEmailVerified && (
             <div className="mt-3">
-              <label htmlFor="emailVerificationCode" className="block text-sm font-medium text-secondary-700 mb-1">
+              <label htmlFor="emailVerificationCode" className="field-label">
                 인증 코드
               </label>
               <div className="flex">
@@ -334,7 +334,7 @@ export default function RegisterPage() {
 
         {/* 이름 필드 */}
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-secondary-700 mb-1">
+          <label htmlFor="name" className="field-label">
             이름
           </label>
           <input
@@ -344,14 +344,14 @@ export default function RegisterPage() {
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:border-primary-500 transition duration-150 ease-in-out"
+            className="field-input"
             placeholder="예: 홍길동"
           />
         </div>
 
         {/* 전화번호 필드 */}
         <div>
-          <label htmlFor="phoneNumber" className="block text-sm font-medium text-secondary-700 mb-1">
+          <label htmlFor="phoneNumber" className="field-label">
             전화번호
           </label>
           <input
@@ -361,7 +361,7 @@ export default function RegisterPage() {
             value={formData.phoneNumber}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 mt-1 text-secondary-700 bg-primary-50 border border-primary-200 rounded-md focus:outline-none focus:border-primary-500 transition duration-150 ease-in-out"
+            className="field-input"
             placeholder="예: 010-1234-5678"
           />
         </div>
@@ -370,7 +370,7 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={!isUsernameChecked || !isEmailVerified || isSubmitting}
-          className="w-full py-3 px-4 font-semibold text-white bg-primary-600 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-150 ease-in-out"
+          className="btn-primary w-full py-3 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
         >
           {isSubmitting ? '처리중' : '회원가입'}
         </button>
