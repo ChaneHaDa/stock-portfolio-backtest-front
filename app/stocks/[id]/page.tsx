@@ -69,13 +69,14 @@ const StockDetailPage = () => {
     try {
       setIsPriceLoading(true);
 
-      // 기본 페이지 크기로 조회 (size 파라미터 제거)
-      const url = `${API_BASE_URL}/stocks/${stockId}/prices?page=0&size=1000&sort=baseDate&direction=ASC`;
+      // 최신 데이터가 잘리지 않도록 최근 1000건을 먼저 조회
+      const url = `${API_BASE_URL}/stocks/${stockId}/prices?page=0&size=1000&sort=baseDate&direction=DESC`;
       const response = await fetch(url);
       const result: ApiResponse<StockPriceResponse> = await response.json();
 
       if (result.status === 'success') {
-        const prices = result.data.content;
+        // 기존 화면 로직과 호환되도록 날짜 오름차순으로 재정렬
+        const prices = [...result.data.content].sort((a, b) => a.baseDate.localeCompare(b.baseDate));
         setAllPrices(prices);
         setDisplayPrices(filterPricesByPeriod(prices, selectedPeriod));
       } else {
