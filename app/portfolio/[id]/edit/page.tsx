@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { API_BASE_URL } from "@/config/apiConfig";
+import MonthPickerField from "@/components/MonthPickerField";
 
 // --- 기존 backtest/page.tsx의 인터페이스 및 컴포넌트 재사용 ---
 
@@ -579,29 +580,21 @@ const PortfolioEditForm = () => {
                 />
               </div>
               <div>
-                <label htmlFor="startDate" className="block text-secondary-700 font-medium mb-2">
-                  시작 날짜
-                </label>
-                <input
-                  type="month"
+                <MonthPickerField
                   id="startDate"
-                  required
+                  label="시작 날짜"
                   value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="border border-primary-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 bg-white"
+                  onChange={setStartDate}
+                  required
                 />
               </div>
               <div>
-                <label htmlFor="endDate" className="block text-secondary-700 font-medium mb-2">
-                  종료 날짜
-                </label>
-                <input
-                  type="month"
+                <MonthPickerField
                   id="endDate"
-                  required
+                  label="종료 날짜"
                   value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="border border-primary-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 bg-white"
+                  onChange={setEndDate}
+                  required
                 />
               </div>
               <div>

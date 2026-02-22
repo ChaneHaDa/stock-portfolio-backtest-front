@@ -3,6 +3,7 @@ import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/config/apiConfig";
 import { STORAGE_KEYS } from "@/utils/constants";
+import MonthPickerField from "@/components/MonthPickerField";
 
 // PortfolioItem 인터페이스에 stockId 추가 (선택되지 않은 경우 null)
 interface PortfolioItem {
@@ -431,29 +432,21 @@ const PortfolioForm = () => {
           <h2 className="text-xl font-semibold text-secondary-700 mb-4">기본 설정</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="startDate" className="block text-secondary-700 font-medium mb-2">
-                시작 날짜
-              </label>
-              <input
-                type="month"
+              <MonthPickerField
                 id="startDate"
-                required
+                label="시작 날짜"
                 value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="border border-primary-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 bg-white"
+                onChange={setStartDate}
+                required
               />
             </div>
             <div>
-              <label htmlFor="endDate" className="block text-secondary-700 font-medium mb-2">
-                종료 날짜
-              </label>
-              <input
-                type="month"
+              <MonthPickerField
                 id="endDate"
-                required
+                label="종료 날짜"
                 value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="border border-primary-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 bg-white"
+                onChange={setEndDate}
+                required
               />
             </div>
             <div>
