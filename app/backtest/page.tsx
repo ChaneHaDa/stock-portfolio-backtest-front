@@ -354,6 +354,11 @@ const PortfolioForm = () => {
     setPortfolioItems(newPortfolioItems);
   };
 
+  const openStockSearch = (index: number) => {
+    setCurrentSearchIndex(index);
+    setIsSearchModalOpen(true);
+  };
+
   // 주식 검색 모달에서 주식 선택 시 호출할 콜백
   const handleStockSelect = (stock: Stock | { isCustom: true; customStockName: string; annualReturnRate: string }) => {
     if (currentSearchIndex !== null) {
@@ -496,34 +501,34 @@ const PortfolioForm = () => {
                 <div className="md:col-span-7">
                   <p className="md:hidden text-xs text-secondary-500 mb-1">종목명</p>
                   <div className="flex items-center gap-2">
-                    {item.isCustom ? (
-                      <div className="flex items-center gap-2 flex-1">
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                          사용자 정의
-                        </span>
-                        <span className="font-medium text-gray-800">{item.customStockName}</span>
-                        <span className="text-sm text-gray-500">({item.annualReturnRate}% 연)</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 flex-1">
-                        {item.stockName ? (
-                          <>
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                              상장 종목
-                            </span>
-                            <span className="font-medium text-gray-800">{item.stockName}</span>
-                          </>
-                        ) : (
-                          <span className="text-gray-400">종목을 선택해주세요</span>
-                        )}
-                      </div>
-                    )}
                     <button
                       type="button"
-                      onClick={() => {
-                        setCurrentSearchIndex(index);
-                        setIsSearchModalOpen(true);
-                      }}
+                      onClick={() => openStockSearch(index)}
+                      className="flex flex-1 items-center gap-2 rounded-lg px-2 py-1 text-left hover:bg-primary-100/60 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      aria-label={`${index + 1}번째 종목 선택`}
+                    >
+                      {item.isCustom ? (
+                        <>
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            사용자 정의
+                          </span>
+                          <span className="font-medium text-gray-800">{item.customStockName}</span>
+                          <span className="text-sm text-gray-500">({item.annualReturnRate}% 연)</span>
+                        </>
+                      ) : item.stockName ? (
+                        <>
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            상장 종목
+                          </span>
+                          <span className="font-medium text-gray-800">{item.stockName}</span>
+                        </>
+                      ) : (
+                        <span className="text-gray-400">종목을 선택해주세요</span>
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openStockSearch(index)}
                       aria-label={`${index + 1}번째 종목 검색`}
                       className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition duration-200"
                     >
