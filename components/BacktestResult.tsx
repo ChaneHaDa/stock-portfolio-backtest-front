@@ -8,10 +8,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
 } from "recharts";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -264,6 +260,25 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
   const portfolioData = useMemo(() => 
     processPortfolioData(result.portfolioInput.portfolioBacktestRequestItemDTOList),
     [processPortfolioData, result.portfolioInput.portfolioBacktestRequestItemDTOList]
+  );
+  const portfolioDataWithIndex = useMemo(
+    () => portfolioData.map((item, originalIndex) => ({ ...item, originalIndex })),
+    [portfolioData]
+  );
+  const [compositionSort, setCompositionSort] = useState<"weightDesc" | "inputOrder">("weightDesc");
+  const topPortfolioData = useMemo(
+    () =>
+      [...portfolioDataWithIndex]
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 3),
+    [portfolioDataWithIndex]
+  );
+  const displayPortfolioData = useMemo(
+    () =>
+      compositionSort === "weightDesc"
+        ? [...portfolioDataWithIndex].sort((a, b) => b.value - a.value)
+        : portfolioDataWithIndex,
+    [compositionSort, portfolioDataWithIndex]
   );
 
   const { highestMonthlyRor, lowestMonthlyRor } = useMemo(() => {
@@ -557,27 +572,43 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
                 </div>
                 <h3 className="text-lg font-bold text-slate-800">포트폴리오 구성</h3>
               </div>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={portfolioData}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={85}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, percent }) =>
-                        `${name} ${(percent * 100).toFixed(0)}%`
-                      }
-                    >
-                      {portfolioData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="mb-3 text-sm font-semibold text-slate-700">총 비중(100%)</p>
+                <div className="flex h-10 w-full overflow-hidden rounded-lg bg-slate-200">
+                  {portfolioData.map((item, index) => (
+                    <div
+                      key={`${item.name}-${index}-segment`}
+                      className="h-full transition-all duration-300"
+                      style={{
+                        width: `${item.value}%`,
+                        backgroundColor: CHART_COLORS[index % CHART_COLORS.length],
+                      }}
+                      title={`${item.name} ${item.value.toFixed(1)}%`}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className="mt-4 space-y-2">
+                <p className="text-sm font-semibold text-slate-700">상위 비중</p>
+                {topPortfolioData.map((item) => {
+                  return (
+                  <div
+                    key={`top-${item.name}-${item.value}`}
+                    className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
+                  >
+                    <div className="flex min-w-0 items-center gap-2">
+                      <span
+                        className="h-2.5 w-2.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: CHART_COLORS[item.originalIndex % CHART_COLORS.length] }}
+                      />
+                      <span className="truncate text-sm text-slate-700" title={item.name}>
+                        {item.name}
+                      </span>
+                    </div>
+                    <span className="shrink-0 text-sm font-semibold text-slate-800">{item.value.toFixed(1)}%</span>
+                  </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -592,19 +623,43 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
                   </svg>
                 </div>
                 <h3 className="text-lg font-bold text-slate-800">종목별 비중</h3>
+                <div className="ml-auto flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCompositionSort("weightDesc")}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                      compositionSort === "weightDesc"
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    비중순
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCompositionSort("inputOrder")}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                      compositionSort === "inputOrder"
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    입력순
+                  </button>
+                </div>
               </div>
               <div className="overflow-hidden">
                 <div className="space-y-4">
-                  {portfolioData.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                  {displayPortfolioData.map((item) => (
+                    <div key={`${item.name}-${item.originalIndex}`} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
                       <div className="flex items-center gap-4">
                         <div 
                           className="w-4 h-4 rounded-full"
-                          style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}
+                          style={{ backgroundColor: CHART_COLORS[item.originalIndex % CHART_COLORS.length] }}
                         ></div>
                         <div>
                           <h4 className="font-semibold text-slate-800">{item.name}</h4>
-                          <p className="text-sm text-slate-500">종목 {index + 1}</p>
+                          <p className="text-sm text-slate-500">종목 {item.originalIndex + 1}</p>
                         </div>
                       </div>
                       <div className="text-right">
