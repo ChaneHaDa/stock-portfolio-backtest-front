@@ -53,7 +53,7 @@ interface InputPortfolioItem {
   customStockName?: string;
   stockName?: string;
   annualReturnRate?: number;
-  weight: number;
+  weight: number | string;
 }
 
 interface PortfolioPerformanceItem {
@@ -252,13 +252,17 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
       }))
       .sort((a, b) => a.date.localeCompare(b.date));
   }, []);
+  const normalizeWeight = useCallback((weight: number | string): number => {
+    const parsedWeight = typeof weight === "number" ? weight : Number(weight);
+    return Number.isFinite(parsedWeight) ? parsedWeight : 0;
+  }, []);
 
   const processPortfolioData = useCallback((portfolio: InputPortfolioItem[]): ChartData[] => {
     return portfolio.map((item) => ({
       name: item.stockName || item.customStockName || "알 수 없음",
-      value: item.weight * 100,
+      value: normalizeWeight(item.weight) * 100,
     }));
-  }, []);
+  }, [normalizeWeight]);
 
   const portfolioData = useMemo(() => 
     processPortfolioData(result.portfolioInput.portfolioBacktestRequestItemDTOList),
@@ -434,12 +438,12 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
           if (item.customStockName && item.annualReturnRate !== undefined) {
             return {
               stockId: null,
-              weight: item.weight
+              weight: normalizeWeight(item.weight)
             };
           } else {
             return {
               stockId: item.stockId,
-              weight: item.weight
+              weight: normalizeWeight(item.weight)
             };
           }
         });
