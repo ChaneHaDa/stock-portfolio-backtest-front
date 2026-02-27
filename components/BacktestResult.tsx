@@ -280,6 +280,7 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
         : portfolioDataWithIndex,
     [compositionSort, portfolioDataWithIndex]
   );
+  const isCompositionScrollable = displayPortfolioData.length > 3;
 
   const { highestMonthlyRor, lowestMonthlyRor } = useMemo(() => {
     const monthlyValues = Object.values(result.monthlyRor).map(Number);
@@ -648,7 +649,7 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
                   </button>
                 </div>
               </div>
-              <div className="overflow-hidden">
+              <div className={isCompositionScrollable ? "max-h-[272px] overflow-y-auto pr-1" : ""}>
                 <div className="space-y-4">
                   {displayPortfolioData.map((item) => (
                     <div key={`${item.name}-${item.originalIndex}`} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
