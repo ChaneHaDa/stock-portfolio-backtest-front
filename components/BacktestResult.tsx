@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { BacktestResult as BacktestResultType, ChartData, MonthlyData } from "@/types/portfolio";
+import { BacktestResult as BacktestResultType, ChartData, MonthlyData, RebalanceFrequency } from "@/types/portfolio";
 import { STORAGE_KEYS } from "@/utils/constants";
 import { API_BASE_URL } from "@/config/apiConfig";
 import DetailedAnalysisSection from "@/components/backtest-result/DetailedAnalysisSection";
@@ -25,6 +25,14 @@ import {
 interface BacktestResultProps {
   result: BacktestResultType;
 }
+
+const REBALANCE_FREQUENCY_LABELS: Record<RebalanceFrequency, string> = {
+  NONE: "리밸런싱 안 함",
+  DAILY: "일별",
+  MONTHLY: "월별",
+  QUARTERLY: "분기별",
+  YEARLY: "연별",
+};
 
 const BacktestResult = ({ result }: BacktestResultProps) => {
   const router = useRouter();
@@ -151,6 +159,11 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
       lowestMonthlyRor: monthlyValues.length > 0 ? Math.min(...monthlyValues) : 0,
     };
   }, [result.monthlyRor]);
+
+  const rebalanceFrequencyLabel = useMemo(() => {
+    const frequency = result.portfolioInput.rebalanceFrequency ?? "DAILY";
+    return REBALANCE_FREQUENCY_LABELS[frequency];
+  }, [result.portfolioInput.rebalanceFrequency]);
 
   const showToast = useCallback((message: string, type: "success" | "error" = "success") => {
     setToast({ show: true, message, type });
@@ -287,6 +300,7 @@ const BacktestResult = ({ result }: BacktestResultProps) => {
           isAuthenticated={Boolean(isAuthenticated)}
           isUpdateMode={isUpdateMode}
           isProcessing={isProcessing}
+          rebalanceFrequencyLabel={rebalanceFrequencyLabel}
           onOpenModal={() => setIsModalOpen(true)}
         />
 

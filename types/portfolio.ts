@@ -44,10 +44,13 @@ export interface Stock {
   marketCategory: string;
 }
 
+export type RebalanceFrequency = "NONE" | "DAILY" | "MONTHLY" | "QUARTERLY" | "YEARLY";
+
 export interface BacktestRequest {
   startDate: string;
   endDate: string;
   amount: number;
+  rebalanceFrequency: RebalanceFrequency;
   portfolioBacktestRequestItemDTOList: PortfolioItem[];
 }
 
@@ -60,6 +63,7 @@ export interface BacktestResult {
     startDate: string;
     endDate: string;
     amount: number;
+    rebalanceFrequency?: RebalanceFrequency;
     portfolioBacktestRequestItemDTOList: PortfolioItem[];
   };
   portfolioBacktestResponseItemDTOList: Array<{

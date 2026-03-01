@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { API_BASE_URL } from "@/config/apiConfig";
 import MonthPickerField from "@/components/MonthPickerField";
+import { RebalanceFrequency } from "@/types/portfolio";
 
 // --- 기존 backtest/page.tsx의 인터페이스 및 컴포넌트 재사용 ---
 
@@ -29,6 +30,14 @@ interface StockSearchModalProps {
   onSelect: (stock: Stock | { isCustom: true; customStockName: string; annualReturnRate: string }) => void;
   onClose: () => void;
 }
+
+const REBALANCE_FREQUENCY_OPTIONS: Array<{ value: RebalanceFrequency; label: string }> = [
+  { value: "NONE", label: "리밸런싱 안 함" },
+  { value: "DAILY", label: "일별" },
+  { value: "MONTHLY", label: "월별" },
+  { value: "QUARTERLY", label: "분기별" },
+  { value: "YEARLY", label: "연별" },
+];
 
 const getErrorMessage = (error: unknown, fallback: string): string =>
   error instanceof Error ? error.message : fallback;
@@ -304,6 +313,7 @@ const PortfolioEditForm = () => {
   const [startDate, setStartDate] = useState(""); // YYYY-MM 형식
   const [endDate, setEndDate] = useState("");   // YYYY-MM 형식
   const [amount, setAmount] = useState("");     // 투자금액 (문자열)
+  const [rebalanceFrequency, setRebalanceFrequency] = useState<RebalanceFrequency>("DAILY");
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
 
   // 로딩 및 에러 상태
@@ -394,6 +404,7 @@ const PortfolioEditForm = () => {
       startDate: formattedStartDate,
       endDate: formattedEndDate,
       amount: Number(amount),
+      rebalanceFrequency,
       portfolioBacktestRequestItemDTOList: portfolioItems.map((item) => {
         if (item.isCustom) {
           // 사용자 정의 종목인 경우
@@ -609,6 +620,23 @@ const PortfolioEditForm = () => {
                   onChange={(e) => setAmount(e.target.value)}
                   className="border border-primary-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 bg-white"
                 />
+              </div>
+              <div>
+                <label htmlFor="rebalanceFrequency" className="block text-secondary-700 font-medium mb-2">
+                  리밸런싱 주기
+                </label>
+                <select
+                  id="rebalanceFrequency"
+                  value={rebalanceFrequency}
+                  onChange={(e) => setRebalanceFrequency(e.target.value as RebalanceFrequency)}
+                  className="border border-primary-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 bg-white"
+                >
+                  {REBALANCE_FREQUENCY_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>

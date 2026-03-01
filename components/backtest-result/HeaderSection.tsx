@@ -6,6 +6,7 @@ interface HeaderSectionProps {
   isAuthenticated: boolean;
   isUpdateMode: boolean;
   isProcessing: boolean;
+  rebalanceFrequencyLabel?: string;
   onOpenModal: () => void;
 }
 
@@ -13,6 +14,7 @@ const HeaderSection = ({
   isAuthenticated,
   isUpdateMode,
   isProcessing,
+  rebalanceFrequencyLabel,
   onOpenModal,
 }: HeaderSectionProps) => {
   return (
@@ -21,6 +23,11 @@ const HeaderSection = ({
         <div>
           <h1 className="text-4xl font-bold text-slate-900 mb-2">백테스트 결과 분석</h1>
           <p className="text-slate-600">포트폴리오 성과를 종합적으로 분석하고 투자 전략을 평가해보세요</p>
+          {rebalanceFrequencyLabel && (
+            <p className="mt-2 inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800">
+              리밸런싱 주기: {rebalanceFrequencyLabel}
+            </p>
+          )}
         </div>
         <div className="flex items-center space-x-3">
           {isAuthenticated && (
